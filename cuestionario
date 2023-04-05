@@ -1,0 +1,26 @@
+Detalles de entrega: Archivo en formato pdf, hoja A4, tamaño de letra 12, interlineado simple, incluyendo la respuesta al cuestionario.
+
+—————————————————————————————————————————
+
+Grupo 5:
+1. Realice un esquema gráfico que indique con claridad las etapas que sigue un
+análisis geoestadístico. Tome en cuenta las pautas generales dadas en clase e
+incorpore los pasos considerados en el análisis de su base de datos. Explique
+cada etapa.
+
+2. ¿Para qué se utilizan las proyecciones cartográficas y cuál es su utilidad
+práctica?
+
+—————————————————————————————————————————
+1. Las etapas del análisis geoestadístico son:
+	- Análisis exploratorio
+	- Construcción del variograma empírico o experimental
+	- Ajustar variograma teórico
+	- Kriging 
+
+2. Una proyección cartográfica es un criterio de representación gráfica para poder visualizar datos que fueron recolectados como mediciones geográficas que contienen coordenadas de longitud, latitud y altitud.  Ya que la Tierra es un cuerpo tridimensional, cada punto que queramos observar va a tener una representación de dicha dimensionalidad.  Y es aquí que la proyección cartográfica nos permite representar observaciones o mediciones tomadas en una Tierra que es curva en un sistema de coordenadas plano que a su vez sea preciso y sin distorsiones. 
+
+Sin embargo, dicha transformación tiene un costo. Al llevar las mediciones a un plano bidimensional implica un sacrificio, ya que necesariamente estamos distorsionando ángulos, distancias o áreas. Es por eso necesario tener bien en claro el objetivo del mapa que se pretende crear para no distorsionar la dimensión que nos interesa; y así, dependiendo de la motivación, podemos elegir proyecciones del isoareales (conservan el área), conformes (conservan ángulos) o equidistantes (preservan distancias).
+
+En casos prácticos, las utilidades son bien variadas. En el ámbito del sector privado, muchas empresas utilizan la georreferenciación para hacer seguimiento de envíos de productos o para medir ubicaciones de compradores/vendedores. Así se podría, entre otras cosas, segmentar perfiles de clientes en función de sus consumos, o hacer análisis de buffer para estudiar la distribución de precios a medida que te alejas de zonas comerciales. Sin embargo, las posibilidades no se agotan sólo en el sector privado. Si vemos el sector público, se utiliza por ejemplo para ubicar cédulas catastrales, estudiar la distribución urbana de la recaudación fiscal o analizar todo lo relativo al diseño del transporte público.
+
