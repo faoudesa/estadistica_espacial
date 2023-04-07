@@ -65,12 +65,20 @@ g
 # tienen valores próximos a 0 y sin significancia estadística alguna.
 
 # Analizamos la normalidad de los datos
-hist(meuse[,c('zinc')], breaks = 16) # No parecen bastante normales.
+x<-meuse$x
+y<-meuse$y
+zinc<-meuse$zinc
+df = as.data.frame(zinc)
 
-boxplot(meuse[,c('zinc')]) # Volvemos a ver la asimetría y valores que parecen ser atípicos.
+ggplot(df, aes(x=zinc)) + geom_histogram() + labs(title = "Distribución del Zinc",y = 'Frequency') + theme(plot.title = element_text(hjust=0.5)) 
+#Podemos observar que los datos no siguen una distribución Normal, más bien parecerían tener 
+#una distribución Exponencial.
 
-qqnorm(meuse[,c('zinc')]) # Se aleja de los cuantiles de una normal.
-qqline(meuse[,c('zinc')], col=2)
+ggplot(df, aes(x=zinc)) + geom_boxplot() + labs(title = "Boxplot del Zinc") + theme(plot.title = element_text(hjust=0.5)) 
+#Volvemos a ver la asimetría y valores que parecen ser atípicos.
+
+ggplot(df, aes(sample=zinc)) + stat_qq() + stat_qq_line() + labs(title = 'QQ Plot de la distribución del Zinc') + theme(plot.title = element_text(hjust=0.5))
+#Vemos que se aleja de los cuantiles de una Normal
 
 # Test de Normalidad
 shapiro.test(meuse[,c('zinc')]) # Tenemos información suficiente como para rechazar la hipótesis
@@ -108,8 +116,29 @@ m3 <- mapview(meuse, zcol = "dist.m", legend = TRUE)
 m4 <- mapview(meuse, zcol = "elev", legend = TRUE)
 sync(m1, m2, m3, m4) # 4 paneles sincronizados
 
-#### Índices Locales y Globales ####
+plot(datag)
+
+#A través de este análisis exploratorio podemos entender que los datos no tienen una distribución normal, sino más
+#bien algo exponencial.
+#Podemos observar que todos los puntos se encuentran dispersos a lo largo del río, teniendo ciertos lugares donde 
+#hay más concentración de los mismos, como es el caso de los puntos azules. Por otro lado, en el caso de los puntos rojos,
+#notamos que se encuentran dispersos, casi que en su totalidad, en el lado izquierdo del río, donde anterirormente encontramos
+#una mayor contaminación de zinc. 
+#En el caso de los puntos verdes, notamos que se encuentrar dispersos por el medio del río, donde referenciandolo con 
+#la localización previamente realizada podemos notar que serían los puntos de menor contaminación por zinc.
+#Por último, identificando los puntos amarillos, encontramos que estos son los que hay en menor medida,denotando estos un grado
+#menor de contaminación por zinc. 
+#Vemos un río ancho y no tan largo, porque este río es conocido como el "más" ancho de Europa
+#Haciendo referencia a la relación entre la variable en estudio con cada coordenada, podemos notar una tendencia en la relación
+#de la contaminación por zinc con respecto a la coordenada x. 
+
+#######################################################
+### Índice de Moran Global, Local e Índice de Geary ###
+######### Estadísticos de Moran y Geary ###############
+#######################################################
+
 # Volvemos a cargar los datos porque tenemos que volver a formatearle las coordenadas
+#Vamos a generar una grilla para ver definir el vecindario y ver los vecinos de cada punto
 
 data(meuse)
 coordinates(meuse) <- c("x", "y")
@@ -126,10 +155,44 @@ pesos <- nb2listw(grilla, style = "W")
 # Ploteamos el vecindario
 plot(grilla, coordenadas, col = "red", pch = 19, cex = 1)
 
+#Calculamos el los índices de Moran local y global, y el índice de Geary
+
+### Índice de Moran ###
+
+#Con el índice de Moran vamos a querer evaluar la autocorrelación espacial para poder comprender la variación de un fénomeno,
+#en este caso del zinc en el río Meuse, en un marco geográfico de análisis.
+#Para decir que hay evidencia de exitencia de autocorrelación positiva deberíamos notar que el zinc se agrupa en zonas uniformes
+#conformando de esta manera una especie de cluster. En el caso de la autocorrelación negativa, deberíamos notar que el zinc
+#se encuentra disperso, es decir que es la presencia de zinc será disímil en sus logares aledaños/vecinos. 
+#Por último, una posible conclusión podría ser que no encontramos autocorrelación espacial, esta puede ser arribada cuando
+#encontramos un comportamiento aleatorio en el estudio del fénomeno. 
+
+### Índice Moran Global###
+
+#Generamos un gráfico que evalúa cuan similar es cada dato con respecto a los datos de sus vecinos 
+#A través de este índice podemos encontrar datos atípicos, es decir posibles outliers espaciales. 
+
 # Generamos un gráfico que evalue cuan similar es el dato respecto a sus vecinos
 M <- moran.plot(meuse$zinc,pesos,zero.policy=F,col=3, quiet=T,labels=T,xlab = "zinc", ylab="lag(zinc)")
 View(M)
 # Tenemos un montón de potenciales outliers, como por ejemplo la observación 118 y la 69.
+
+if (require(ggplot2, quietly=TRUE)) {
+  xname <- attr(M, "xname")
+  ggplot(M, aes(x=x, y=wx)) + geom_point(shape=1) + 
+    geom_smooth(formula=y ~ x, method="lm") + 
+    geom_hline(yintercept=mean(M$wx), lty=2) + 
+    geom_vline(xintercept=mean(M$x), lty=2) + theme_minimal() + 
+    geom_point(data=M[M$is_inf,], aes(x=x, y=wx), shape=9) +
+    geom_text(data=M[M$is_inf,], aes(x=x, y=wx, label=labels, vjust=1.5)) +
+    xlab(xname) + ylab(paste0("Spatially lagged ", xname))
+}
+
+### Índice de Moran Local ###
+#A través del índice de Moran Local vamos a poder detectar la presencia de posibles outliers espaciales, ayudandonos a elimiar
+#de la muestra los datos que difieren significativamente de su vecindario, en otras palabras cuatificará la similitud
+#del punto con respecto a la vecindad.
+#Este índice será calculado para cada observación.
 
 # Calculamos el índice de Moran Local y mostramos los resultados
 ML <- localmoran(meuse$zinc, pesos, alternative ="less")
@@ -147,6 +210,14 @@ head(IML[order(IML$Pr.z...E.Ii..),])
 # FALSE: dato similar a su entorno.
 Elim = M$is_inf
 Elim
+#Como podemos ver las observaciones que son iguales a TRUE son las que demarcamos como posibles outliers
+
+### Test de Moran ####
+#Con el test de Moran queremos determinar la presencia o ausencia significativa
+#de autocorrelación espacial dentro de un conjunto de datos.
+#Para este caso la hipótesis nula planteara la no correlación espacial de los datos, por lo que si el p valor obtenido
+#del test es menor que el nivel de significancia elegido, entonces la hipótesis nula será rechazada, concluyendo
+#la presencia de autocorrelación espacial en los datos.
 
 # Hacemos el test de Moran Global (IMG) de asociación espacial
 moran.test(meuse$zinc, nb2listw(grilla, style = "W"))
@@ -165,6 +236,19 @@ moran.test(meuse$zinc, nb2listw(grilla, style = "minmax"))
 # por el tamaño de la vecindad, para los que tienen una codificación que permite estabilizar
 # la varianza ("S") y para los que estandarizan los pesos con el rango de máximo y mínimo
 # ("minmax").
+
+### Índice de Geary ###
+
+#Con el índice de Geary vamos a medir la asociación espacial a través del cambio, es decir vamos a analizar la asociación
+#espacial a través de la varianza del cambio.
+#A través de este índice evaluaremos la distribución del zinc en el río Meuse es de manera aleatoria o no.
+#Diremos que hay una alta autocorrelación espacial si la diferencia de los valores del zinc en diferentes lugares son
+#similares y la distancia entre los lugares es pequeña.
+#Este índice es más sensible a outliers que el índice de Moran.
+#El índice de Geary se expresa como un valor entre 0 y 2, donde 1 indica una distribución espacial aleatoria 
+#de la variable. Un valor menor que 1 indica una autocorrelación positiva, lo que significa que los valores similares 
+#tienden a estar cerca unos de otros, mientras que un valor mayor que 1 indica una autocorrelación negativa, 
+#lo que significa que los valores diferentes tienden a estar cerca unos de otros.
 
 # Hacemos el teste de Geary Local (Varianza del cambio)
 geary.test(meuse$zinc, nb2listw(grilla, style = "W"),randomisation = FALSE)
@@ -193,9 +277,16 @@ moran.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"))
 geary.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"),randomisation = FALSE)
 # Vemos que ahora ambos índices se mueven a favor de una hipótesis de mayor relación espacial,
 # aunque no es un cambio espectacular.
+#Al arrojar valores menores a 1, poxsmoz afirmar que hay autocorrelación positiva, es decir que los valores similares
+#tienden a estar cerca unos de otros. 
+
 
 #### Variogramas ####
 # Esto es lo que respecta al análisis estructural.
+
+#El variograma es una herramienta para el análisis geoestadístico utilizada para describir la variabilidad espacial
+#de un fenómeno, en este caso el zinc. 
+
 
 # Genero el Variograma Nube
 nube_clasica <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, option = "cloud")
