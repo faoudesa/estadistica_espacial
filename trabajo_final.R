@@ -17,6 +17,7 @@ library("rgdal")
 library('lattice') 
 library('grDevices')
 library('GGally')
+library('dplyr')
 
 #####  Carga de información ####
 data(meuse)
@@ -165,7 +166,7 @@ moran.test(meuse$zinc, nb2listw(grilla, style = "minmax"))
 # la varianza ("S") y para los que estandarizan los pesos con el rango de máximo y mínimo
 # ("minmax").
 
-# Hacemos el teste de Geary Local
+# Hacemos el teste de Geary Local (Varianza del cambio)
 geary.test(meuse$zinc, nb2listw(grilla, style = "W"),randomisation = FALSE)
 geary.test(meuse$zinc, nb2listw(grilla, style = "S"),randomisation = FALSE)
 geary.test(meuse$zinc, nb2listw(grilla, style = "B"),randomisation = FALSE)
@@ -248,6 +249,10 @@ plot(res1.v)
 s1 = variog.mc.env(meuse, coords = coordinates(meuse), data = meuse$zinc, obj = res1.v)
 plot(res1.v, env = s1)
 
+# Usando una simulación simple de Monte Carlo, vemos que en ambos variograsmas empíricos (osea, tanto el de los residuos como
+# con el clásico sin tendencia) nos muestras que hay puntos que caen fuera del "envelope", lo cual nos dice que hay margen para estudiar la depen-
+# dencia espacial, sobre todo a distancias cortas.
+
 s2 = variog.mc.env(meuse, coords = coordinates(meuse), data = meuse$zinc, obj = bin_clasico)
 plot(bin_clasico, env = s2)
 
@@ -328,8 +333,170 @@ v1 <- variogram(zinc~1, meuse, cutoff = 4200, width = 200, map=T)
 plot(v1)
 # Con un mayor ancho de ventana parece más evidente
 
+#### Kriging ####
+# Kriging Ordinario: Se aplica para Procesos estacionarios con media conocida #
+# AJUSTE CON VARIOGRAMA EMPÍRICO SIN TENDENCIA #
+
+# Cómo la librería trabaja con u objeto geoespacial distinto a los casos previos, volvemos a tomar la base
+datos <- select(copia_seguridad,x,y,zinc)
+coordinates(datos) = ~x+y
+datosg<-as.geodata(datos) # Convertimos en datos geospaciales sin usar GeoR, sino como GeoData
+
+# Calculamos y graficamos un semivariograma
+vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 50, map=T)
+plot(vv)
+vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 500)
+plot(vv)
+vv <- variogram(zinc~1, meuse,cloud=T) # Sin tendencia, pues no hayamos una
+plot(vv)
+
+
+# Para ajustar el modelo, volvemos a hacer un variograma empírico
+v <- variogram(zinc~1, meuse) # Sin tendencia, pues no hayamos una
+plot(v)
+
+# Ajustamos varios modelos de variograma
+# y seleccionamos dos
+
+# Ajuste 1 (Exp)
+v1_exp = fit.variogram(v, vgm(190000, "Exp", 1400, 30000))
+v1_exp
+plot(v , v1_exp)
+
+# Ajuste 2 (Sph)
+
+v2_sph = fit.variogram(v, vgm(190000, "Sph", 1400, 30000))
+v2_sph
+plot(v, v2_sph)
+
+# Ajuste 3 (Gau). Tenemos que estimar los parámetros de inicio primero
+res1.v.gaus = eyefit(res1.v)
+res1.v.gaus
+v3_gau = fit.variogram(v, vgm(143151, "Gau", 333.3, 4))
+v3_gau
+plot(v , v3_gau)
+
+
+attr(v1_exp, 'SSErr')
+attr(v2_sph, 'SSErr')
+attr(v3_gau, 'SSErr')
+
+# Nos quedamos con el modelo exponencial, que es el que menor error nos arroja.
+
+# Pero pará, probemos un cuarto ajuste automático con varios modelos.
+
+# Ajuste 4
+v4_sel = fit.variogram(v, vgm(143151, c("Exp", "Sph", "Mat"), 333.3, 4))
+v4_sel
+plot(v , v4_sel)
+attr(v4_sel, 'SSErr')
+
+#Vamos a quedarnos con dos modelos competidores
+# Sph y Exp (seleccionado por R)
+
+#________________________________________________
+#Generamos una grilla de predicci?n que llamamos g2
+#Elegimos posiciones en el espacio donde no tenemos datos
+points(datosg)
+g2 <- expand.grid(x=seq(179500, 180500, by=100), y=seq(330000,332000, by=100))
+gridded(g2) = ~x+y
+plot(g2)
+
+# Realizamos la predicción sobre la grilla g2 con
+# los dos modelos competidores: 
+
+# Exponencial
+k1 <- krige(zinc~1, datos, g2, model = v1_exp, nmax = 155)
+# Esférico
+k2 <- krige(zinc~1, datos, g2, model = v2_sph, nmax = 155)
+
+# Ploteamos el kriging
+# Modelo exponencial
+spplot(k1["var1.pred"], main = "Kriging ordinario: Valores Predichos (Exp)", col.regions=terrain.colors)
+spplot(k1["var1.var"],  main = "Kriging ordinario: Varianza de las Predicciones (Exp)", col.regions=terrain.colors)
+
+# Modelo esférico
+spplot(k2["var1.pred"], main = "Kriging ordinario: Valores Predichos (Sph)", col.regions=terrain.colors)
+spplot(k2["var1.var"],  main = "Kriging ordinario: Varianza de las Predicciones (Sph)", col.regions=terrain.colors)
+
+# Tabla_1 (Sph)
+# Tabla_2(Exp)
+
+Predicciones1=k1$var1.pred
+Predicciones1
+Varianza1=k1$var1.var
+Varianza1
+x1=k1$x
+y1=k1$y
+Tabla_1=cbind(x1,y1, Predicciones1, Varianza1)
+Tabla_1
+Predicciones2=k2$var1.pred
+Predicciones2
+Varianza2=k2$var1.var
+Varianza2
+x1=k2$x
+y1=k2$y
+Tabla_2=cbind(x1,y1, Predicciones2, Varianza2)
+
+# Validación cruzada de los modelos
+# Recordamos los dos modelos de variograma ajustados
+# y sus parámetros
+
+
+v2_sph = fit.variogram(v, vgm(190000, "Sph", 1400, 30000))
+v2_sph
+modelo1<- vgm(134743, "Sph", 24798, 4.73)
+
+
+v4_sel = fit.variogram(v, vgm(143151, c("Exp", "Sph", "Gau", "Mat"), 333.3, 4))
+v4_sel
+modelo2<- vgm(166237, "Exp", 323.6665, 0)
+
+
+#v4_sel = fit.variogram(v, vgm(15, "Exp", 1100, 4))
+#v4_sel
+#modelo2<- vgm(16.46, "Exp", 1794, 4.14)
+
+valcruz1 <- krige.cv(zinc~1, datos, modelo1, nfold=155)
+valcruz1
+names(valcruz1)
+
+valcruz2 <- krige.cv(zinc~1, datos, modelo2, nfold=155)
+names(valcruz2)
+
+# Error medio de predicci?n.
+# Se espera que sea lo mas proximo a cero posible.
+mean(valcruz1$residual)
+mean(valcruz2$residual)
+# Error cuadratico medio de predicci?n.
+# Valors bajos son mejores.
+mean(valcruz1$residual^2)
+mean(valcruz2$residual^2)
+# Error cuadr?tico medio normalizado.
+# Valor deseado: proximo a 1.
+mean(valcruz1$zscore^2)
+mean(valcruz2$zscore^2)
+# Correlaci?n lineal entre valores observados y predichos
+cor(valcruz1$observed, valcruz1$observed - valcruz1$residual)
+cor(valcruz2$observed, valcruz2$observed - valcruz2$residual)
+
+# Correlaci?n lineal entre valores observados y predichos
+par(mfrow=c(1,2))
+plot(valcruz1$observed,valcruz1$observed - valcruz1$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+plot(valcruz2$observed,valcruz2$observed - valcruz2$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+
+r1<-valcruz1$observed - valcruz1$residual
+regresion1 <- lm(valcruz1$observed ~ r1, data = valcruz1)
+summary(regresion1)
+r2<-valcruz2$observed - valcruz2$residual
+regresion2 <- lm(valcruz2$observed ~ r2, data = valcruz2)
+summary(regresion2)
+
 
 #### Material Útil ####
 # Páginas
 # https://rpubs.com/daniballari/geostat_basico
 # https://rpubs.com/quarcs-lab/spatial-autocorrelation
+# http://www.leg.ufpr.br/lib/exe/fetch.php/patrick:spatialcourse:slides.pdf
+
+# Video. 1:50:00 de la segunda parte de la clase 4 habla un poco de cómo encarar un análisis de estadística espacial.

@@ -16,7 +16,7 @@ práctica?
 	- Análisis exploratorio
 	- Construcción del variograma empírico o experimental
 	- Ajustar variograma teórico
-	- Interpoiación por Kriging 
+	- Kriging 
 
 2. Una proyección cartográfica es un criterio de representación gráfica para poder visualizar datos que fueron recolectados como mediciones geográficas que contienen coordenadas de longitud, latitud y altitud.  Ya que la Tierra es un cuerpo tridimensional, cada punto que queramos observar va a tener una representación de dicha dimensionalidad.  Y es aquí que la proyección cartográfica nos permite representar observaciones o mediciones tomadas en una Tierra que es curva en un sistema de coordenadas plano que a su vez sea preciso y sin distorsiones. 
 
