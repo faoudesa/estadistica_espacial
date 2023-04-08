@@ -65,8 +65,8 @@ g
 # tienen valores próximos a 0 y sin significancia estadística alguna.
 
 # Analizamos la normalidad de los datos
-x<-meuse$x
-y<-meuse$y
+x <- meuse$x
+y <- meuse$y
 zinc<-meuse$zinc
 df = as.data.frame(zinc)
 
@@ -84,7 +84,7 @@ ggplot(df, aes(sample=zinc)) + stat_qq() + stat_qq_line() + labs(title = 'QQ Plo
 shapiro.test(meuse[,c('zinc')]) # Tenemos información suficiente como para rechazar la hipótesis
 # nula de que los datos siguen una distribución normal.
 
-# Vemos como queda bastante normal si lo llevamos a logaritmo
+# Vemos como parece quedar con una distribución más cercanaa a la normal si lo llevamos a logaritmo
 meuse$lnZn <- log(meuse$zinc, base = exp(1))
 hist(meuse$lnZn, breaks = 16)
 shapiro.test(meuse$lnZn)
@@ -130,7 +130,8 @@ plot(datag)
 #menor de contaminación por zinc. 
 #Vemos un río ancho y no tan largo, porque este río es conocido como el "más" ancho de Europa
 #Haciendo referencia a la relación entre la variable en estudio con cada coordenada, podemos notar una tendencia en la relación
-#de la contaminación por zinc con respecto a la coordenada x. 
+#de la contaminación por zinc con respecto a la coordenada x e y, pero de una magnitud muy chica y sin significancia
+#estadística. 
 
 #######################################################
 ### Índice de Moran Global, Local e Índice de Geary ###
@@ -185,7 +186,7 @@ if (require(ggplot2, quietly=TRUE)) {
     geom_vline(xintercept=mean(M$x), lty=2) + theme_minimal() + 
     geom_point(data=M[M$is_inf,], aes(x=x, y=wx), shape=9) +
     geom_text(data=M[M$is_inf,], aes(x=x, y=wx, label=labels, vjust=1.5)) +
-    xlab(xname) + ylab(paste0("Spatially lagged ", xname))
+    xlab('Zinc') + ylab(paste0("Spatially lagged ", 'Zinc'))
 }
 
 ### Índice de Moran Local ###
@@ -260,7 +261,7 @@ geary.test(meuse$zinc, nb2listw(grilla, style = "minmax"),randomisation = FALSE)
 # Con todos las pruebas de pesos, el valor del estadístico es menor a 1, 
 # lo cual nos indica que en sitios conectados los valores del zinc son similares.
 
-# Qué pasa si hacemos el test de Moran sacando Outliers?
+# ¿Qué pasa si hacemos el test de Moran sacando Outliers?
 moran.test(meuse$zinc, nb2listw(grilla, style = "W")) # Con todo
 
 # Prueba sin potenciales outliers: Obervación 57, 125, 69, 122 y 98
@@ -277,7 +278,7 @@ moran.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"))
 geary.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"),randomisation = FALSE)
 # Vemos que ahora ambos índices se mueven a favor de una hipótesis de mayor relación espacial,
 # aunque no es un cambio espectacular.
-#Al arrojar valores menores a 1, poxsmoz afirmar que hay autocorrelación positiva, es decir que los valores similares
+#Al arrojar valores menores a 1, podemos afirmar que hay autocorrelación positiva, es decir que los valores similares
 #tienden a estar cerca unos de otros. 
 
 
@@ -418,14 +419,14 @@ g
 
 v <- variogram(zinc~1, meuse, cutoff = 4200, width = 50, map=T)
 plot(v)
-# Parece un proceso Anisotrópico, parece un dirección por continuidad, alcanzando otros
+# Parece un proceso Anisotrópico, con dirección por continuidad, alcanzando otros
 # valores si corremos la dirección perpendicular al sentido de la mancha
 v1 <- variogram(zinc~1, meuse, cutoff = 4200, width = 200, map=T)
 plot(v1)
 # Con un mayor ancho de ventana parece más evidente
 
 #### Kriging ####
-# Kriging Ordinario: Se aplica para Procesos estacionarios con media conocida #
+# Kriging Ordinario: Se aplica para Procesos estacionarios con media desconocida #
 # AJUSTE CON VARIOGRAMA EMPÍRICO SIN TENDENCIA #
 
 # Cómo la librería trabaja con u objeto geoespacial distinto a los casos previos, volvemos a tomar la base
@@ -474,7 +475,7 @@ attr(v3_gau, 'SSErr')
 
 # Nos quedamos con el modelo exponencial, que es el que menor error nos arroja.
 
-# Pero pará, probemos un cuarto ajuste automático con varios modelos.
+# Sin embargo, también probamos un cuarto ajuste automático con varios modelos.
 
 # Ajuste 4
 v4_sel = fit.variogram(v, vgm(143151, c("Exp", "Sph", "Mat"), 333.3, 4))
@@ -482,11 +483,11 @@ v4_sel
 plot(v , v4_sel)
 attr(v4_sel, 'SSErr')
 
-#Vamos a quedarnos con dos modelos competidores
+#Vamos a quedarnos con los dos mejores modelos
 # Sph y Exp (seleccionado por R)
 
-#________________________________________________
-#Generamos una grilla de predicci?n que llamamos g2
+-------------------------------------------------
+#Generamos una grilla de predicción llamada g2
 #Elegimos posiciones en el espacio donde no tenemos datos
 points(datosg)
 g2 <- expand.grid(x=seq(179500, 180500, by=100), y=seq(330000,332000, by=100))
@@ -510,79 +511,197 @@ spplot(k1["var1.var"],  main = "Kriging ordinario: Varianza de las Predicciones 
 spplot(k2["var1.pred"], main = "Kriging ordinario: Valores Predichos (Sph)", col.regions=terrain.colors)
 spplot(k2["var1.var"],  main = "Kriging ordinario: Varianza de las Predicciones (Sph)", col.regions=terrain.colors)
 
-# Tabla_1 (Sph)
-# Tabla_2(Exp)
+# Vemos que la varianza en las predicciones del modelo exponencial parece ser más baja respecto al segundo modelo propuesto.
 
-Predicciones1=k1$var1.pred
-Predicciones1
-Varianza1=k1$var1.var
-Varianza1
+# Tabla_1 (Modelo Exponencial)
+Predicciones1 = k1$var1.pred
+Varianza1 = k1$var1.var
+
+# Armamos la tabla
 x1=k1$x
 y1=k1$y
 Tabla_1=cbind(x1,y1, Predicciones1, Varianza1)
-Tabla_1
-Predicciones2=k2$var1.pred
-Predicciones2
-Varianza2=k2$var1.var
-Varianza2
-x1=k2$x
-y1=k2$y
-Tabla_2=cbind(x1,y1, Predicciones2, Varianza2)
 
-# Validación cruzada de los modelos
+
+# Tabla_2 (Modelo Esférico)
+Predicciones2 = k2$var1.pred
+Varianza2 = k2$var1.var
+
+# Armamos la tabla
+x2=k2$x
+y2=k2$y
+Tabla_2 = cbind(x2,y2, Predicciones2, Varianza2)
+
+# Hacemos una validación cruzada de los modelos
 # Recordamos los dos modelos de variograma ajustados
 # y sus parámetros
 
+modelo1 <- vgm(190000, "Exp", 1400, 30000) # Modelo Exponencial
+modelo2 <- vgm(134743, "Sph", 24798, 4.73) # Modelo Esférico
 
-v2_sph = fit.variogram(v, vgm(190000, "Sph", 1400, 30000))
-v2_sph
-modelo1<- vgm(134743, "Sph", 24798, 4.73)
-
-
-v4_sel = fit.variogram(v, vgm(143151, c("Exp", "Sph", "Gau", "Mat"), 333.3, 4))
-v4_sel
-modelo2<- vgm(166237, "Exp", 323.6665, 0)
-
-
-#v4_sel = fit.variogram(v, vgm(15, "Exp", 1100, 4))
-#v4_sel
-#modelo2<- vgm(16.46, "Exp", 1794, 4.14)
-
+# Hacemos validación cruzada del modelo 1
 valcruz1 <- krige.cv(zinc~1, datos, modelo1, nfold=155)
 valcruz1
 names(valcruz1)
 
+# Hacemos validación cruzada del modelo 2
 valcruz2 <- krige.cv(zinc~1, datos, modelo2, nfold=155)
+valcruz2
 names(valcruz2)
 
-# Error medio de predicci?n.
+# Error medio de predicción.
 # Se espera que sea lo mas proximo a cero posible.
 mean(valcruz1$residual)
 mean(valcruz2$residual)
-# Error cuadratico medio de predicci?n.
+# En error medio de predicción, el modelo exponencial sigue siendo el gran ganador.
+
+# Error cuadratico medio de predicción.
 # Valors bajos son mejores.
 mean(valcruz1$residual^2)
 mean(valcruz2$residual^2)
-# Error cuadr?tico medio normalizado.
+# En ECM de predicción, el modelo esférico le gana al exponencial.
+
+# Error cuadrático medio normalizado.
 # Valor deseado: proximo a 1.
 mean(valcruz1$zscore^2)
 mean(valcruz2$zscore^2)
-# Correlaci?n lineal entre valores observados y predichos
+# En el error cuadrático medio normalizado el modelo exponencial gana. 
+
+# Correlación lineal entre valores observados y predichos
 cor(valcruz1$observed, valcruz1$observed - valcruz1$residual)
 cor(valcruz2$observed, valcruz2$observed - valcruz2$residual)
 
-# Correlaci?n lineal entre valores observados y predichos
+# Ploteamos dicha correlación
 par(mfrow=c(1,2))
-plot(valcruz1$observed,valcruz1$observed - valcruz1$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
-plot(valcruz2$observed,valcruz2$observed - valcruz2$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+plot(valcruz1$observed,valcruz1$observed - valcruz1$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+plot(valcruz2$observed,valcruz2$observed - valcruz2$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+par(mfrow=c(1,1))
 
+# La correlación lineal entre los valores observados y los predichos toma valores bastante similares en 
+# ambos modelos.
+
+# Salidas de regresión
+# Modelo 1: Exponencial
 r1<-valcruz1$observed - valcruz1$residual
 regresion1 <- lm(valcruz1$observed ~ r1, data = valcruz1)
 summary(regresion1)
+
+# Modelo 2: Esférico
 r2<-valcruz2$observed - valcruz2$residual
 regresion2 <- lm(valcruz2$observed ~ r2, data = valcruz2)
 summary(regresion2)
 
+# Tanto el R2 ajustado como los coeficientes obtenidos son muy similares entre ambos modelos, aunque nosotros
+# estamos más a favor del caso 1 (exponencial) por la evidencia previa. Los coeficientes estimados en ambas 
+# regresiones son similares, siendo el resultante del modelo esférico con un R2 ajustado mínimamente superior.
+
+# Kriging Simple: Se aplica para Procesos estacionarios con media conocida #
+# AJUSTE CON VARIOGRAMA EMPÍRICO SIN TENDENCIA #
+
+# Tomamos los datos que venimos usando. Para el caso de la grilla, en este caso tomaremos
+# la grilla que viene con la base original. 
+
+# Cargamos la grilla
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+
+# Realizamos la predicción sobre la nueva grilla con los dos modelos competidores: 
+# Previamente, tenemos que imputar la media del proceso en el terreno, ya que de otra
+# manera estaríamos haciendo un kriging oridnario.
+
+media_zinc = mean(datos$zinc)
+
+# Modelo Exponencial
+k1_ord <- krige(zinc~1, datos, meuse.grid, model = v1_exp, nmax = 155, beta = media_zinc)
+# Modelo Esférico
+k2_ord <- krige(zinc~1, datos, meuse.grid, model = v2_sph, nmax = 155, beta = media_zinc)
+
+# Ahora realizamos las predicciones sobre la grilla nueva para ambos modelos: 
+
+# Modelo Exponencial
+spplot(k1_ord["var1.pred"], main = "Kriging simple: Valores Predichos (Exp)", col.regions=terrain.colors)
+spplot(k1_ord["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Exp)", col.regions=terrain.colors)
+
+# Modelo Esférico
+spplot(k2_ord["var1.pred"], main = "Kriging simple: Valores Predichos (Sph)", col.regions=terrain.colors)
+spplot(k2_ord["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Sph)", col.regions=terrain.colors)
+
+# Vemos que ambos modelos ajustan bastante bien, ya que tenemos los mayores valores predichos
+# muy cercano a lo que es la superficie del río. A su vez, la varianza de las predicciones se
+# ven bastante similares en ambos casos.
+
+# Tabla_1_ord (Modelo Exponencial)
+Predicciones1_ord = k1_ord$var1.pred
+Varianza1_ord = k1_ord$var1.var
+
+# Armamos la tabla
+x1_ord=k1_ord$x
+y1_ord=k1_ord$y
+Tabla_1_ord=cbind(x1_ord,y1_ord, Predicciones1_ord, Varianza1_ord)
+
+# Tabla_2_ord (Modelo Esférico)
+Predicciones2_ord = k2_ord$var1.pred
+Varianza2_ord = k2_ord$var1.var
+
+# Armamos la tabla
+x2_ord=k2_ord$x
+y2_ord=k2_ord$y
+Tabla_2_ord = cbind(x2_ord,y2_ord, Predicciones2_ord, Varianza2_ord)
+
+# Hacemos una validación cruzada de los modelos
+# Hacemos validación cruzada del modelo 1
+valcruz1_ord <- krige.cv(zinc~1, datos, modelo1, nfold=155)
+
+# Hacemos validación cruzada del modelo 2
+valcruz2_ord <- krige.cv(zinc~1, datos, modelo2, nfold=155)
+
+# Error medio de predicción.
+# Se espera que sea lo mas proximo a cero posible.
+mean(valcruz1_ord$residual)
+mean(valcruz2_ord$residual)
+# En error medio de predicción, el modelo exponencial sigue siendo el gran ganador.
+
+# Error cuadratico medio de predicción.
+# Valors bajos son mejores.
+mean(valcruz1_ord$residual^2)
+mean(valcruz2_ord$residual^2)
+# En ECM de predicción, el modelo esférico le gana al exponencial.
+
+# Error cuadrático medio normalizado.
+# Valor deseado: proximo a 1.
+mean(valcruz1_ord$zscore^2)
+mean(valcruz2_ord$zscore^2)
+# En el error cuadrático medio normalizado el modelo exponencial gana. 
+
+# Correlación lineal entre valores observados y predichos
+cor(valcruz1_ord$observed, valcruz1_ord$observed - valcruz1_ord$residual)
+cor(valcruz2_ord$observed, valcruz2_ord$observed - valcruz2_ord$residual)
+
+# Ploteamos dicha correlación
+par(mfrow=c(1,2))
+plot(valcruz1_ord$observed,valcruz1_ord$observed - valcruz1_ord$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+plot(valcruz2_ord$observed,valcruz2_ord$observed - valcruz2_ord$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+par(mfrow=c(1,1))
+
+# La correlación lineal entre los valores observados y los predichos toma valores muy similares,
+# siendo más similares los resultados que en el caso del kriging ordinario.
+
+# Salidas de regresión
+# Modelo 1: Exponencial
+r1_ord <-valcruz1_ord$observed - valcruz1_ord$residual
+regresion1_ord <- lm(valcruz1_ord$observed ~ r1_ord, data = valcruz1_ord)
+summary(regresion1_ord)
+
+# Modelo 2: Esférico
+r2_ord<-valcruz2_ord$observed - valcruz2_ord$residual
+regresion2_ord <- lm(valcruz2_ord$observed ~ r2_ord, data = valcruz2_ord)
+summary(regresion2_ord)
+
+# Los resultados son muy similares en comparación con el caso del kriging ordinario. Tanto
+# los R2 ajustados como los coeficientes estimados y los p-value son en ambos casos muy parecidos.
+
+# No consideramos necesario hacer Kriging Universal puesto que no encontramos ninguna tendencia
+# entre el zinc y alguna de las coordenadas.
 
 #### Material Útil ####
 # Páginas
