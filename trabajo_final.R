@@ -68,6 +68,7 @@ g
 x <- meuse$x
 y <- meuse$y
 zinc<-meuse$zinc
+
 df = as.data.frame(zinc)
 
 ggplot(df, aes(x=zinc)) + geom_histogram() + labs(title = "Distribución del Zinc",y = 'Frequency') + theme(plot.title = element_text(hjust=0.5)) 
@@ -116,6 +117,11 @@ m3 <- mapview(meuse, zcol = "dist.m", legend = TRUE)
 m4 <- mapview(meuse, zcol = "elev", legend = TRUE)
 sync(m1, m2, m3, m4) # 4 paneles sincronizados
 
+x<-meuse$x
+y<-meuse$y
+zinc<-meuse$zinc
+data<-cbind(x,y,zinc)
+datag<-as.geodata(data)
 plot(datag)
 
 #A través de este análisis exploratorio podemos entender que los datos no tienen una distribución normal, sino más
@@ -174,7 +180,7 @@ plot(grilla, coordenadas, col = "red", pch = 19, cex = 1)
 #A través de este índice podemos encontrar datos atípicos, es decir posibles outliers espaciales. 
 
 # Generamos un gráfico que evalue cuan similar es el dato respecto a sus vecinos
-M <- moran.plot(meuse$zinc,pesos,zero.policy=F,col=3, quiet=T,labels=T,xlab = "zinc", ylab="lag(zinc)")
+M <- moran.plot(meuse$zinc,pesos,zero.policy=F,col=3, quiet=TRUE,labels=T,xlab = "zinc", ylab="lag(zinc)")
 View(M)
 # Tenemos un montón de potenciales outliers, como por ejemplo la observación 118 y la 69.
 
@@ -258,6 +264,7 @@ geary.test(meuse$zinc, nb2listw(grilla, style = "B"),randomisation = FALSE)
 geary.test(meuse$zinc, nb2listw(grilla, style = "C"),randomisation = FALSE)
 geary.test(meuse$zinc, nb2listw(grilla, style = "U"),randomisation = FALSE)
 geary.test(meuse$zinc, nb2listw(grilla, style = "minmax"),randomisation = FALSE) 
+
 # Con todos las pruebas de pesos, el valor del estadístico es menor a 1, 
 # lo cual nos indica que en sitios conectados los valores del zinc son similares.
 
@@ -290,10 +297,13 @@ geary.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"),randomisa
 
 
 # Genero el Variograma Nube
+#A través del variograma nube vamos a poder graficar la distancia de los puntos en el espacio vs la variable de cambio (semivarianza al cuadrado)
 nube_clasica <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, option = "cloud")
 nube_CH <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, option = "cloud", estimator.type = "modulus")
 
-# Genero el variograma experimental
+# Genero el variograma experimental/ empírico
+#Como con el variograma nube no alcanza vamos a calcular el variograma empírico, el cual va a ser construido a partir del variograma nube, dividiendo el eje de distancias en 
+#intervalos, tomando un representante sobre el cual promedio con todos los puntos que caen dentro del intervalo, consiguiendo así la representación del mismo.
 bin_clasico <- variog(meuse, coords = coordinates(meuse),uvec = seq(0, 1000, by = 50), data = meuse$zinc)
 bin_CH <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), estimator.type= "modulus")
 
@@ -305,6 +315,10 @@ plot(bin_clasico, main = "classical estimator")
 plot(bin_CH, main = "modulus estimator")
 par(mfrow = c(1,1))
 
+#A través de estos gráficos podríamos observar un ligero comportamiento anisotropíco en la varble, dado que para algunos puntos el comportamiento del zinc
+#presenta algunas variaciones en ciertas direcciones, pero las mismas son muy pequeñas. 
+
+
 ### Boxplots de bins
 
 bin1 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), bin.cloud = T)
@@ -315,7 +329,13 @@ plot(bin1, bin.cloud = T, main = "classical estimator")
 plot(bin2, bin.cloud = T, main = "modulus estimator")
 par(mfrow = c(1,2))
 
+
 ## Datos direccionales
+
+#Calculamos el variograma variando las direcciones, de esta manera queremos entender la variabilidad espacial del zinc en diferentes direcciones. 
+#En este caso queremos entender si estamos frente a una vairable anisotrópica o isotrópica, es decir queremos terminar de confirmar si el comportamiento
+#estadístico varía según la dirección en la que se mida la distancia. 
+#Para poder calcularlo vamos a tomar un ángula y distancia determinados
 
 vario.2 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), dir=0)
 vario.3 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), dir=pi/2)
@@ -326,11 +346,15 @@ plot(bin_clasico, type="l")
 lines(vario.2, lty = 2, col = 2)
 lines(vario.3, lty = 3, col = 3)
 lines(vario.4, lty = 4, col = 4)
-legend("bottomright", c("omnidireccional", "0", "90", "45"), col=c(1,2,3,4), lty=c(1,2,3,4))
+legend("bottomright", c("omnidireccional", "0°", "90°", "45°"), col=c(1,2,3,4), lty=c(1,2,3,4))
+
 
 # Otro plot
 varias_direcciones = variog4(coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50))
 plot(varias_direcciones)
+
+#Podemos observar que para diferentes distancias y ángulos la variable en cuestión presenta ciertas variaciones, por lo que estaríamos en presencia de anisotrópia. 
+
 
 #Variogramas de residuos
 res1.v = variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50))
@@ -372,6 +396,8 @@ v
 
 # Con estos valores podemos dar unos valores iniciales para que el modelo estime
 # el variograma teórico
+#Calculamos el variograma teórico porque necesitamos de una línea continúa para poder estimar las observaciones que no fueron representadas. 
+
 vt_exp = fit.variogram(v, vgm(190000, "Exp", 1400, 30000))
 vt_exp # Nugget de 9486, el rango es 9486.599 + 163285.464, aunque después fija
 # el rango en 381.7098 (el cuál tendremos que multiplicar por 3)
@@ -425,11 +451,54 @@ v1 <- variogram(zinc~1, meuse, cutoff = 4200, width = 200, map=T)
 plot(v1)
 # Con un mayor ancho de ventana parece más evidente
 
+show.vgms()
+
+
+vExp <- fit.variogram(vten, vgm(model = "Exp"),fit.method = 2)
+#vGau <- fit.variogram(vten, vgm(model = "Gau"),fit.method = 2)
+vSph <- fit.variogram(vten, vgm(model = "Sph"),fit.method = 2)
+vMat <- fit.variogram(vten, vgm(model = "Mat", nugget = 1,kappa = 0.5),fit.method = 2)
+vBes <- fit.variogram(vten,vgm("Bes"),fit.method = 2)
+vSte <- fit.variogram(vten,vgm("Ste"),fit.method = 2)
+
+d <- c("Exponencial"= plot ( vten , vExp),
+       #"Gaussiano"=plot ( vten , vGau),
+       "Esferico "=plot ( vten , vSph),
+       "Matern"=plot ( vten , vMat),
+       "Stein's"= plot ( vten , vSte),
+       "Bessel"= plot ( vten , vBes))
+d
+
+vExpLine=variogramLine(vExp,500)
+#vGauLine=variogramLine(vGau,500)
+vSphLine=variogramLine(vSph,500)
+vMatLine=variogramLine(vMat,500)
+vSteLine=variogramLine(vSte,500)
+vBesLine=variogramLine(vBes,500)
+
+ggplot(mapping = aes(dist,gamma))+
+  geom_point(data = vten)+
+  geom_line(data = vExpLine,aes(color="Exponencial"))+
+  geom_line(data = vSphLine,aes(color="Esferico"))+
+  geom_line(data = vMatLine,aes(color="Matern"))+
+  geom_line(data = vSteLine,aes(color="Stein's"))+
+  geom_line(data = vBesLine,aes(color="Bessel"))+
+  scale_color_discrete("Modelo")+
+  theme_classic()
+
+
 #### Kriging ####
+#El objetivo del Kriging es generar una predicción basado en el variograma teórico para el punto donde se desconoce el valor de la variable,
+#es decir queremos generar una predicción suave donde a través de estas podamos predecir el valor de lo que se desconoce, es decir el valor de la variable donde no fue medida.
+#El Kriging nos dará una predicción lineal, la cual estima el valor desconocido a través de los referentes más cercanos a la variable de interés. 
+#Decimos que es lineal porque es la suma de los valores en las posiciones vecinas, po lo que es una correlación lineal, donde se le agrega peso en base a la influencia que tienen
+#sobre la variable. 
+
+
 # Kriging Ordinario: Se aplica para Procesos estacionarios con media desconocida #
 # AJUSTE CON VARIOGRAMA EMPÍRICO SIN TENDENCIA #
 
-# Cómo la librería trabaja con u objeto geoespacial distinto a los casos previos, volvemos a tomar la base
+# Cómo la librería trabaja con un objeto geoespacial distinto a los casos previos, volvemos a tomar la base
 datos <- select(copia_seguridad,x,y,zinc)
 coordinates(datos) = ~x+y
 datosg<-as.geodata(datos) # Convertimos en datos geospaciales sin usar GeoR, sino como GeoData
@@ -453,7 +522,8 @@ plot(v)
 # Ajuste 1 (Exp)
 v1_exp = fit.variogram(v, vgm(190000, "Exp", 1400, 30000))
 v1_exp
-plot(v , v1_exp)
+plot(v , v1_exp) #Podemos ver un efecto sill o meceta en el valor 700, esto quiere decir que a partir de este valor obtenemosd el valor de variación máxima.
+#Por otro lado podemos observar un efecto nugget o pepita. 
 
 # Ajuste 2 (Sph)
 
