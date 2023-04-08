@@ -13,10 +13,10 @@ práctica?
 
 —————————————————————————————————————————
 1. Las etapas del análisis geoestadístico son:
-	- Análisis exploratorio
-	- Construcción del variograma empírico o experimental
-	- Ajustar variograma teórico
-	- Kriging 
+	- Análisis exploratorio: A partir de este análisis buscamos ver a priori ciertas tendencias y comportamientos de la vairbale en estudio, ver la distribución de la misma.
+	- Construcción del variograma empírico o experimental: A través de estos evaluamos la similaridad de los datos en función de la distancia entre las ubicaciones donde fueron obtenidos
+	- Ajustar variograma teórico: Ajustamos el variograma teórico porque necesitamos una representación para todas las ditancias para poder predecir los valores en la vairable en las distancias donde no se midió.Esto con el variograma empírico no lo podemos realizar porqeu usa el conjunto de datos dados. 
+	- Kriging : A través del Kriging buscamos predecir los valores de la variable en aquellos lugares donde esta no fue medida, esto se va a poder realizar a partir del variograma teórico obtenido
 
 2. Una proyección cartográfica es un criterio de representación gráfica para poder visualizar datos que fueron recolectados como mediciones geográficas que contienen coordenadas de longitud, latitud y altitud.  Ya que la Tierra es un cuerpo tridimensional, cada punto que queramos observar va a tener una representación de dicha dimensionalidad.  Y es aquí que la proyección cartográfica nos permite representar observaciones o mediciones tomadas en una Tierra que es curva en un sistema de coordenadas plano que a su vez sea preciso y sin distorsiones. 
 
