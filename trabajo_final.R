@@ -773,6 +773,104 @@ summary(regresion2_ord)
 # No consideramos necesario hacer Kriging Universal puesto que no encontramos ninguna tendencia
 # entre el zinc y alguna de las coordenadas.
 
+# Kriging Universal: Se aplica para Procesos estacionarios con media desconocida, suponiendo que hay una tendencia del zinc con las coordenadas #
+# AJUSTE CON VARIOGRAMA EMPÍRICO CON TENDENCIA #
+# Vamos a hacerlo de cualquier manera, para evidenciar que los resultados son similares, y fortalecer nuestra hipótesis de que no existe
+# una tendencia.
+
+# Tomamos los datos que venimos usando. Volvemos a tomar la grilla que viene con la base original. 
+
+# Cargamos la grilla
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+
+# Realizamos la predicción sobre la nueva grilla con los dos modelos competidores: 
+
+# Modelo Exponencial
+k1_uni <- krige(zinc~1, datos, meuse.grid, model = v1_exp, nmax = 155)
+# Modelo Esférico
+k2_uni <- krige(zinc~1, datos, meuse.grid, model = v2_sph, nmax = 155)
+
+# Ahora realizamos las predicciones sobre la grilla nueva para ambos modelos: 
+
+# Modelo Exponencial
+spplot(k1_uni["var1.pred"], main = "Kriging simple: Valores Predichos (Exp)", col.regions=terrain.colors)
+spplot(k1_uni["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Exp)", col.regions=terrain.colors)
+
+# Modelo Esférico
+spplot(k2_uni["var1.pred"], main = "Kriging simple: Valores Predichos (Sph)", col.regions=terrain.colors)
+spplot(k2_uni["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Sph)", col.regions=terrain.colors)
+
+# Vemos que ambos modelos ajustan bastante bien, ya que tenemos los mayores valores predichos
+# muy cercano a lo que es la superficie del río. Sin embargo, vemos que a nivel general es muy similar al modelo ordinario sin 
+# tendencia, lo cual robustece nuestra postura inicial de que no encontramos una tendencia clara entre el zinc y las coordenadas.
+
+# Tabla_1_uni (Modelo Exponencial)
+Predicciones1_uni = k1_uni$var1.pred
+Varianza1_uni = k1_uni$var1.var
+
+# Armamos la tabla
+x1_uni=k1_uni$x
+y1_uni=k1_uni$y
+Tabla_1_uni=cbind(x1_uni,y1_uni, Predicciones1_uni, Varianza1_uni)
+
+# Tabla_2_uni (Modelo Esférico)
+Predicciones2_uni = k2_uni$var1.pred
+Varianza2_uni = k2_uni$var1.var
+
+# Armamos la tabla
+x2_uni=k2_uni$x
+y2_uni=k2_uni$y
+Tabla_2_uni = cbind(x2_uni,y2_uni, Predicciones2_uni, Varianza2_uni)
+
+# Hacemos una validación cruzada de los modelos
+# Hacemos validación cruzada del modelo 1
+valcruz1_uni <- krige.cv(zinc~1, datos, modelo1, nfold=155)
+
+# Hacemos validación cruzada del modelo 2
+valcruz2_uni <- krige.cv(zinc~1, datos, modelo2, nfold=155)
+
+# Error medio de predicción.
+# Se espera que sea lo mas proximo a cero posible.
+mean(valcruz1_uni$residual)
+mean(valcruz2_uni$residual)
+# En error medio de predicción, el modelo exponencial sigue siendo el gran ganador.
+
+# Error cuadratico medio de predicción.
+# Valores bajos son mejores.
+mean(valcruz1_uni$residual^2)
+mean(valcruz2_uni$residual^2)
+# En ECM de predicción, el modelo esférico le gana al exponencial.
+
+# Error cuadrático medio normalizado.
+# Valor deseado: proximo a 1.
+mean(valcruz1_uni$zscore^2)
+mean(valcruz2_uni$zscore^2)
+# En el error cuadrático medio normalizado el modelo exponencial gana. 
+
+# Correlación lineal entre valores observados y predichos
+cor(valcruz1_uni$observed, valcruz1_uni$observed - valcruz1_uni$residual)
+cor(valcruz2_uni$observed, valcruz2_uni$observed - valcruz2_uni$residual)
+
+# Ploteamos dicha correlación
+par(mfrow=c(1,2))
+plot(valcruz1_uni$observed,valcruz1_uni$observed - valcruz1_uni$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+plot(valcruz2_uni$observed,valcruz2_uni$observed - valcruz2_uni$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+par(mfrow=c(1,1))
+
+# Obtenemos resultados muy similares a los que obtuvimos previamente con el cómputo del kriging ordinario.
+
+# Salidas de regresión
+# Modelo 1: Exponencial
+r1_uni <-valcruz1_uni$observed - valcruz1_uni$residual
+regresion1_uni <- lm(valcruz1_uni$observed ~ r1_uni, data = valcruz1_uni)
+summary(regresion1_uni)
+
+# Modelo 2: Esférico
+r2_uni<-valcruz2_uni$observed - valcruz2_uni$residual
+regresion2_uni <- lm(valcruz2_uni$observed ~ r2_uni, data = valcruz2_uni)
+summary(regresion2_uni)
+
 #### Material Útil ####
 # Páginas
 # https://rpubs.com/daniballari/geostat_basico
