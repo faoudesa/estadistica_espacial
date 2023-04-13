@@ -1,0 +1,409 @@
+---
+title: |
+  | Universidad de San Andrés
+  | Departamento de Matemática y Ciencias
+  | Maestría en Ciencia de Datos
+  
+subtitle: |
+  | Asignatura: Estadística ESpacial
+  | TP Final
+
+date: "`r format(Sys.time(), '%d-%m-%Y')`"
+
+author:
+- name: Alan Matys
+- name: Fernando Ornat
+- name: BBárbara Lococo
+
+output: 
+  html_document:
+    css: "format.css"
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    self_contained: true
+    includes:
+      before_body: header.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+# Enunciado: Parte 1
+
+
+Cada grupo deberá trabajar con un archivo de datos georreferenciados que le será
+Provisto luego de finalizado el curso (29/03/23) y antes del 1 de abril. Con los datos,
+cada grupo deberá realizar un análisis geoestadístico con respaldo computacional en
+R y elaborar un informe. Se espera que se satisfagan las siguientes condiciones.
+Problemática: Presentación breve del problema.
+
+Metodología: Estadística descriptiva, Índices de Moran Global, Geary y Moran Local.
+Eliminación de outliers espaciales. Discusión sobre el supuesto de la estacionariedad.
+Análisis de isotropía. Análisis Estructural (Variograma). Predicción (Kriging). Validación
+cruzada.
+
+Se evaluará: Completitud de la metodología utilizada, interpretación de resultados,
+Justificación de afirmaciones, organización y presentación general del trabajo.
+
+
+# Librerias
+
+```{r}
+library('geoR')
+library('spdep')
+library('gstat')
+library("leafsync")
+library('mapview')
+library('leaflet')
+library('RColorBrewer')
+library('ggplot2')
+library('ggmap')
+library('tibble')
+library('caret')
+library('sf')
+library('sp')
+library('PerformanceAnalytics')
+library("rgdal")
+library('lattice') 
+library('grDevices')
+library('GGally')
+library('dplyr')
+library('geostan')
+```
+
+#Problemática
+
+Para este trabajo, contamos con la base de datos  “meuse” de la librería “sp” de R como objeto de análisis. En particular, nos encontramos con datos sobre las locaciones de grandes concentraciones de metales pesados, más precisamente zinc, en la capa superficial del suelo de la llanura del río Meuse. Es por eso que, valiéndonos de los recursos vistos en el curso, decidimos plantear un análisis sistemático que abarque desde una estadística descriptiva, seguido por estudios de estacionariedad, isotropía, análisis estructural y predicción.
+
+
+
+# Carga de datos
+
+```{r}
+data(package = 'sp')
+data(meuse)
+str(meuse)
+
+copia_seguridad <- meuse
+```
+
+#Metodología
+
+#Análisis Exploratorio
+En una primera instancia, llevamos a cabo un análisis exploratorio descriptivo de la base de datos a analizar. Tras validar que no hubiese valores nulos o faltantes, procedimos a evaluar tanto la distribución del zinc como su relación con las coordenadas geográficas. 
+
+```{r}
+#### Hacemos una breve exploración de la base ####
+# Vemos la cantidad de registros y columnas
+dim(meuse[,c('x','y','zinc')]) # nos quedan 155 observaciones con la longitud, latitud y valor de Zinc reportado
+
+# Vemos algunos datos de la base
+head(meuse[,c('x','y','zinc')])
+View(meuse[,c('x','y','zinc')])
+
+# Vemos la estadística descriptiva
+summary(meuse[,c('x','y','zinc')]) # Tenemos valores máximos que superan ampliamente la mediana de la población. 
+# Sospechamos entonces que habrán eventuales datos atípicos
+
+# Analizamos duplicados y valores nulos
+sum(duplicated(meuse[,c('x','y','zinc')])) # No tenemos registros duplicados
+sum(is.na(meuse[,c('x','y','zinc')])) # No tenemos valores NA. 
+```
+OBS: Son importantes estos chequeos porque en caso de haber duplicados o nulos tendríamos que evaluar si imputar o eliminar registros.
+
+```{r}
+x<-meuse$x
+y<-meuse$y
+zinc<-meuse$zinc
+data<-cbind(x,y,zinc)
+datag<-as.geodata(data)
+plot(datag)
+```
+
+Aquí podemos observar que todos los puntos se encuentran dispersos a lo largo del río, teniendo ciertos lugares donde los niveles de concentración del metal parecen agruparse. Por ejemplo, para el caso de los puntos rojos, notamos que estos son los valores que reflejan el mayor nivel de concentración de zinc, y que están agrupados muy próximos al río; mientras que los puntos que con menores niveles de concentración se hallan más dispersos y a una distancia mayor relativo al río.
+
+```{r}
+data(meuse)
+coordinates(meuse) <- ~x+y
+proj4string(meuse) <- CRS("+init=epsg:28992")
+
+mapview(meuse, zcol = c("zinc"), legend = TRUE)
+```
+Haciendo referencia a la relación entre la variable en estudio con cada coordenada, podemos notar una muy leve tendencia en la relación de la contaminación por zinc con respecto a la coordenada x e y, pero de la magnitud es muy chica y sin significancia estadística. 
+
+```{r}
+my_fn <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) + 
+    geom_point() + 
+    geom_smooth(method=loess, fill="red", color="red", ...) +
+    geom_smooth(method=lm, fill="blue", color="blue", ...)
+  p
+}
+# Graficamos correlaciones y nube de puntos
+g = ggpairs(meuse[,c('x','y','zinc')],columns = 1:3, lower = list(continuous = my_fn))
+g
+
+```
+
+```{r}
+shapiro.test(meuse$zinc)
+```
+
+
+Respecto a la distribución del zinc, para alcanzar una mayor profundidad, hicimos el siguiente test de Shapiro-Wilk para evaluar su normalidad de la distribución con mayor rigurosidad
+
+H0 =Datos  N(,) 
+
+H1 = Datos  N(,)
+
+obteniendo un p-valor de 3.28e-12, por lo cual rechazamos la hipótesis nula de normalidad. También hicimos el ejercicio transformando la variable con logaritmo, y obtuvimos un resultado muy similar a favor de la no normalidad de los datos. Esto también se evidencia si comparamos los cuantiles de una normal con la distribución de los datos en un QQ-Plot.
+
+```{r}
+df = as.data.frame(zinc)
+ggplot(df, aes(sample=zinc)) + stat_qq() + stat_qq_line() + labs(title = 'QQ Plot de la distribución del Zinc') + theme(plot.title = element_text(hjust=0.5))
+
+ggplot(df, aes(x=zinc)) + geom_histogram() + labs(title = "Distribución del Zinc",y = 'Frequency') + theme(plot.title = element_text(hjust=0.5)) 
+
+ggplot(df, aes(x=zinc)) + geom_boxplot() + labs(title = "Boxplot del Zinc") + theme(plot.title = element_text(hjust=0.5)) 
+```
+
+#Moran y Geary
+
+Previamente al cálculo de los índices para determinar la autocorrelación de nuestros datos,debemos definir los pesos para cada una de las observaciones para así definir una grilla la cual nos determine el vecindario y los vecinos de cada punto.
+
+
+```{r}
+data(meuse)
+coordinates(meuse) <- c("x", "y")
+coordenadas <- coordinates(meuse)
+grilla <- dnearneigh(meuse,0,400)
+card(grilla)
+plot(grilla, coordenadas, pch=18, cex=0.5)
+pesos <- nb2listw(grilla, style = "W")
+plot(grilla, coordenadas, col = "red", pch = 19, cex = 1)
+
+```
+
+Los índices que se van a calcular son el de Moran local y global y el de Geary.
+
+El objetivo del cálculo del índice de Moran es evaluar la autocorrelación espacial. Se busca comprender la variación de un fenómeno, en este caso del zinc en el río Meuse, en un marco geográfico de análisis. 
+Para decir que hay evidencia a favor de la existencia de autocorrelación positiva deberíamos notar que el zinc se agrupa en zonas uniformes conformando de esta manera una especie de cluster. 
+En el caso de la autocorrelación negativa, deberíamos notar que el zinc se encuentra disperso, es decir que la presencia de zinc será disímil en sus lugares aledaños/vecinos.  Por último, una posible conclusión podría ser que no encontramos autocorrelación espacial, lo que nos dice que la variable tiene un comportamiento aleatorio en el estudio del fenómeno en el terreno. 
+
+En una primera instancia se calcula el Índice de Moran Global
+
+Generamos un gráfico que evalúa cuán similar es cada dato con respecto a los datos de sus vecinos.
+A través de este índice podemos encontrar datos atípicos, es decir posibles outliers espaciales. 
+
+```{r}
+M <- moran.plot(meuse$zinc,pesos,zero.policy=F,col=3, quiet=TRUE,labels=T,xlab = "zinc", ylab="lag(zinc)")
+View(M)
+```
+```{r}
+if (require(ggplot2, quietly=TRUE)) {
+  xname <- attr(M, "xname")
+  ggplot(M, aes(x=x, y=wx)) + geom_point(shape=1) + 
+    geom_smooth(formula=y ~ x, method="lm") + 
+    geom_hline(yintercept=mean(M$wx), lty=2) + 
+    geom_vline(xintercept=mean(M$x), lty=2) + theme_minimal() + 
+    geom_point(data=M[M$is_inf,], aes(x=x, y=wx), shape=9) +
+    geom_text(data=M[M$is_inf,], aes(x=x, y=wx, label=labels, vjust=1.5)) +
+    xlab('Zinc') + ylab(paste0("Spatially lagged ", 'Zinc'))
+}
+```
+
+A través del índice de Moran Local vamos a poder detectar la presencia de posibles outliers espaciales, ayudándonos a eliminar de la muestra los datos que difieren significativamente de su vecindario, en otras palabras cuantificar la similitud del punto con respecto a la vecindad.
+Este índice será calculado para cada observación.
+
+A continuación mostraremos el listado de observaciones ordenado en función de su Índice de Moran Local (IML)
+
+```{r}
+ML <- localmoran(meuse$zinc, pesos, alternative ="less")
+IML <-printCoefmat(data.frame(ML,row.names=elevation$Casos),check.names=FALSE)
+head(IML[order(IML$Pr.z...E.Ii..),])
+```
+
+Más allá del valor del índice y la detección de outliers se plantea el test de Moran para detectar la presencia o ausencia de autocorrelación espacial en los datos.
+Para este caso la hipótesis nula plantea la ausencia de autocorrelación espacial, por lo que si el p-valor obtenido del test es menor que el nivel de significancia elegido, entonces encontraremos evidencia a favor de la alternativa, existencia de autocorrelación espacial.
+
+Para mayor grado de certeza en el test, se probó utilizando distintos tipos de vecindades al momento de testear, los resultados obtenidos fueron los siguientes:
+
+```{r}
+moran.test(meuse$zinc, nb2listw(grilla, style = "W"))
+moran.test(meuse$zinc, nb2listw(grilla, style = "S"))
+moran.test(meuse$zinc, nb2listw(grilla, style = "B"))
+moran.test(meuse$zinc, nb2listw(grilla, style = "C"))
+moran.test(meuse$zinc, nb2listw(grilla, style = "U"))
+moran.test(meuse$zinc, nb2listw(grilla, style = "minmax"))
+```
+En base a los resultados obtenidos tenemos evidencia a favor de la existencia de autocorrelación espacial en los datos.
+Una vez calculado el Test de Moran pasamos a calcular el Índice de Geary con este vamos a medir la asociación espacial a través del cambio, es decir vamos a analizar la asociación espacial a través de la varianza del cambio.
+De esta manera evaluaremos si la distribución del zinc en el río Meuse es de manera aleatoria o no.
+Diremos que hay una alta autocorrelación espacial si la diferencia de los valores del zinc en diferentes lugares son similares y la distancia entre los lugares es pequeña.
+
+Este índice es más sensible a outliers que el índice de Moran.
+El índice de Geary se expresa como un valor entre 0 y 2, donde 1 indica una distribución espacial aleatoria de la variable. Un valor menor que 1 indica una autocorrelación positiva, lo que significa que los valores similares tienden a estar cerca unos de otros, mientras que un valor mayor que 1 indica una autocorrelación negativa, lo que significa que los valores diferentes tienden a estar cerca unos de otros.
+
+```{r}
+geary.test(meuse$zinc, nb2listw(grilla, style = "W"),randomisation = FALSE)
+geary.test(meuse$zinc, nb2listw(grilla, style = "S"),randomisation = FALSE)
+geary.test(meuse$zinc, nb2listw(grilla, style = "B"),randomisation = FALSE)
+geary.test(meuse$zinc, nb2listw(grilla, style = "C"),randomisation = FALSE)
+geary.test(meuse$zinc, nb2listw(grilla, style = "U"),randomisation = FALSE)
+geary.test(meuse$zinc, nb2listw(grilla, style = "minmax"),randomisation = FALSE) 
+
+```
+
+En base a los resultados obtenidos nos indica que en sitios conectados los valores del zinc son similares.
+
+Realizado los tests con el dataset completo, pasamos a explorar los mismos sin la consideración de los outliers.
+
+```{r}
+sin_outlier = copia_seguridad[-c(57,125,69,122,98),]
+coordinates(sin_outlier) <- c("x", "y")
+coordenadas_sin_outlier <- coordinates(sin_outlier)
+```
+
+```{r}
+grilla_sin_outlier <- dnearneigh(sin_outlier,0,400)
+card(grilla_sin_outlier)
+plot(grilla_sin_outlier, coordenadas_sin_outlier, pch=18, cex=0.5)
+moran.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W")) 
+geary.test(sin_outlier$zinc, nb2listw(grilla_sin_outlier, style = "W"),randomisation = FALSE)
+```
+
+Al arrojar valores menores a 1, podemos afirmar que hay autocorrelación positiva, es decir que los valores similares tienden a estar cerca unos de otros. 
+
+#Variograma
+
+Una vez realizado el cálculo de los índices que nos ayudaron a determinar si existe o no autocorrelación en nuestros datos, procedemos con el análisis estructural el cual empieza con el variograma.
+El variograma es una herramienta para el análisis geoestadístico utilizada para describir la variabilidad espacial de un fenómeno, en este caso el zinc. 
+Hay tres tipos de variogramas que se utilizaran para el análisis:
+
+Variograma nube: podemos graficar la distancia de los puntos en el espacio vs la variable de cambio (semi varianza al cuadrado)
+
+
+Variograma empírico o experimental: Como con el variograma nube no alcanza vamos a calcular el variograma empírico, el cual va a ser construido a partir del variograma nube, dividiendo el eje de distancias en intervalos, tomando un representante sobre el cual promedió con todos los puntos que caen dentro del intervalo, consiguiendo así la representación del mismo.
+
+
+Variograma teórico: este será calculado dado que necesitamos de una línea continúa para poder estimar las observaciones que no fueron representadas. 
+
+A continuación mostraremos cómo es la visualización tanto del variograma nube como del empírico.
+
+```{r}
+nube_clasica <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, option = "cloud")
+nube_CH <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, option = "cloud", estimator.type = "modulus")
+bin_clasico <- variog(meuse, coords = coordinates(meuse),uvec = seq(0, 1000, by = 50), data = meuse$zinc)
+bin_CH <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), estimator.type= "modulus")
+```
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(nube_clasica, main = "Variograma Nube - classical estimator")
+plot(nube_CH, main = "Variograma Nube -modulus estimator")
+plot(bin_clasico, main = "Variograma Empírico - classical estimator")
+plot(bin_CH, main = "Variograma Empírico - modulus estimator")
+par(mfrow = c(1,1))
+```
+
+
+```{r}
+bin1 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), bin.cloud = T)
+bin2 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), estimator.type = "modulus", bin.cloud = T)
+```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(bin1, bin.cloud = T, main = "classical estimator")
+plot(bin2, bin.cloud = T, main = "modulus estimator")
+par(mfrow = c(1,2))
+```
+Como podemos observar a través de estos gráficos podríamos observar un ligero comportamiento anisotrópico en la variable, dado que para algunos puntos el comportamiento del zinc presenta algunas variaciones en ciertas direcciones, pero las mismas son muy pequeñas. 
+
+En este caso queremos entender si estamos frente a una variable anisotrópica o isotrópica, es decir queremos terminar de confirmar si el comportamiento estadístico varía según la dirección en la que se mida la distancia, es por eso que calculamos el variograma variando las direcciones, de esta manera queremos entender la variabilidad espacial del zinc en diferentes direcciones. 
+Para poder calcularlo vamos a tomar un ángulo y distancia determinados
+
+```{r}
+vario.2 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), dir=0)
+vario.3 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), dir=pi/2)
+vario.4 <- variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50), dir=pi/4)
+```
+
+
+```{r}
+par(mfrow = c(1,1))
+plot(bin_clasico, type="l")
+lines(vario.2, lty = 2, col = 2)
+lines(vario.3, lty = 3, col = 3)
+lines(vario.4, lty = 4, col = 4)
+legend("bottomright", c("omnidireccional", "0°", "90°", "45°"), col=c(1,2,3,4), lty=c(1,2,3,4))
+```
+Podemos observar que para diferentes distancias y ángulos la variable en cuestión presenta ciertas variaciones, por lo que estaríamos en presencia de anisotropía.
+  
+Luego de este análisis pasamos a estudiar los residuos de ambos variogramas para entender si existe un margen para analizar la dependencia espacial.
+
+
+```{r}
+res1.v = variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50))
+set.seed(123)
+s1 = variog.mc.env(meuse, coords = coordinates(meuse), data = meuse$zinc, obj = res1.v)
+```
+
+```{r}
+plot(res1.v, env = s1)
+```
+
+Podemos observar, usando una simulación simple de Monte Carlo,  que existe el margen para estudiar la dependencia espacial, sobre todo para distancias cortas.
+
+Con estos resultados procedemos a ajustar el variograma teórico, para ello consideraremos los siguientes parámetros:
+
+```{r}
+res1.v.ef = eyefit(res1.v)
+sigmasq = 143151.79
+phi = 333.33
+nugget = 17893.97
+modelo = "exp"
+```
+
+```{r}
+vt_exp = fit.variogram(v, vgm(190000, "Exp", 1400, 30000))
+rango_practico = 381.7098 * 3
+plot(v , vt_exp, main = 'Variograma Teórico Exponencial sin tendencia')
+```
+
+```{r}
+vt_sph = fit.variogram(v, vgm(190000, "Sph", 1400, 30000))
+plot(v , vt_sph, main = 'Variograma Teórico Esferíco sin tendencia')
+```
+
+```{r}
+vten <- variogram(zinc~x+y, meuse)
+```
+
+
+```{r}
+vtent_exp = fit.variogram(vten, vgm(190000, "Exp", 1400, 30000))
+plot(vten , vtent_exp, main = 'Variograma Teórico Exponencial con tendencia')
+```
+
+```{r}
+vtent_sph = fit.variogram(vten, vgm(190000, "Sph", 1400, 30000))
+plot(vten , vtent_sph,main = 'Variograma Teórico Esferíco con tendencia')
+```
+
+Como podemos observar tanto para el caso de los modelos con tendencia como sin tendencia el exponencial es el que mejor se ajusta a nuestro variograma. 
+ Ahora bien,  la pregunta es: ¿el modelo correcto es con o sin tendencia?, no podemos mezclar los errores cuadráticos entre modelos con y sin tendencia.Para ello, hay que analizar los plots, pero como vimos antes, no hay patrones claros.
+Además, al haber hecho variogramas con y sin tendencia y obtener resultados tan parecidos, se refuerza nuestra hipótesis de que no tienen tendencia.
+
+```{r}
+names<- c('Modelo','Error Cuadrático')
+```
+
