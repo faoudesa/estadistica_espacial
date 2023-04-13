@@ -13,7 +13,7 @@ date: "`r format(Sys.time(), '%d-%m-%Y')`"
 author:
 - name: Alan Matys
 - name: Fernando Ornat
-- name: BBárbara Lococo
+- name: Bárbara Lococo
 
 output: 
   html_document:
@@ -88,8 +88,9 @@ Para este trabajo, contamos con la base de datos  “meuse” de la librería �
 ```{r}
 data(package = 'sp')
 data(meuse)
-str(meuse)
+```
 
+```{r}
 copia_seguridad <- meuse
 ```
 
@@ -102,19 +103,29 @@ En una primera instancia, llevamos a cabo un análisis exploratorio descriptivo 
 #### Hacemos una breve exploración de la base ####
 # Vemos la cantidad de registros y columnas
 dim(meuse[,c('x','y','zinc')]) # nos quedan 155 observaciones con la longitud, latitud y valor de Zinc reportado
+```
 
+
+```{r}
 # Vemos algunos datos de la base
 head(meuse[,c('x','y','zinc')])
 View(meuse[,c('x','y','zinc')])
+```
 
+```{r}
 # Vemos la estadística descriptiva
 summary(meuse[,c('x','y','zinc')]) # Tenemos valores máximos que superan ampliamente la mediana de la población. 
 # Sospechamos entonces que habrán eventuales datos atípicos
+```
 
+
+```{r}
 # Analizamos duplicados y valores nulos
 sum(duplicated(meuse[,c('x','y','zinc')])) # No tenemos registros duplicados
 sum(is.na(meuse[,c('x','y','zinc')])) # No tenemos valores NA. 
 ```
+
+
 OBS: Son importantes estos chequeos porque en caso de haber duplicados o nulos tendríamos que evaluar si imputar o eliminar registros.
 
 ```{r}
@@ -138,6 +149,7 @@ mapview(meuse, zcol = c("zinc"), legend = TRUE)
 Haciendo referencia a la relación entre la variable en estudio con cada coordenada, podemos notar una muy leve tendencia en la relación de la contaminación por zinc con respecto a la coordenada x e y, pero de la magnitud es muy chica y sin significancia estadística. 
 
 ```{r}
+data(meuse)
 my_fn <- function(data, mapping, ...){
   p <- ggplot(data = data, mapping = mapping) + 
     geom_point() + 
@@ -145,10 +157,11 @@ my_fn <- function(data, mapping, ...){
     geom_smooth(method=lm, fill="blue", color="blue", ...)
   p
 }
-# Graficamos correlaciones y nube de puntos
+```
+
+```{r}
 g = ggpairs(meuse[,c('x','y','zinc')],columns = 1:3, lower = list(continuous = my_fn))
 g
-
 ```
 
 ```{r}
@@ -158,9 +171,9 @@ shapiro.test(meuse$zinc)
 
 Respecto a la distribución del zinc, para alcanzar una mayor profundidad, hicimos el siguiente test de Shapiro-Wilk para evaluar su normalidad de la distribución con mayor rigurosidad
 
-H0 =Datos  N(,) 
+$H_0$ = Datos N($\mu$,$\sigma$) 
 
-H1 = Datos  N(,)
+$H_1$ = Datos N($\mu$,$\sigma$)
 
 obteniendo un p-valor de 3.28e-12, por lo cual rechazamos la hipótesis nula de normalidad. También hicimos el ejercicio transformando la variable con logaritmo, y obtuvimos un resultado muy similar a favor de la no normalidad de los datos. Esto también se evidencia si comparamos los cuantiles de una normal con la distribución de los datos en un QQ-Plot.
 
@@ -286,13 +299,13 @@ Una vez realizado el cálculo de los índices que nos ayudaron a determinar si e
 El variograma es una herramienta para el análisis geoestadístico utilizada para describir la variabilidad espacial de un fenómeno, en este caso el zinc. 
 Hay tres tipos de variogramas que se utilizaran para el análisis:
 
-Variograma nube: podemos graficar la distancia de los puntos en el espacio vs la variable de cambio (semi varianza al cuadrado)
+* Variograma nube: podemos graficar la distancia de los puntos en el espacio vs la variable de cambio (semi varianza al cuadrado)
 
 
-Variograma empírico o experimental: Como con el variograma nube no alcanza vamos a calcular el variograma empírico, el cual va a ser construido a partir del variograma nube, dividiendo el eje de distancias en intervalos, tomando un representante sobre el cual promedió con todos los puntos que caen dentro del intervalo, consiguiendo así la representación del mismo.
+* Variograma empírico o experimental: Como con el variograma nube no alcanza vamos a calcular el variograma empírico, el cual va a ser construido a partir del variograma nube, dividiendo el eje de distancias en intervalos, tomando un representante sobre el cual promedió con todos los puntos que caen dentro del intervalo, consiguiendo así la representación del mismo.
 
 
-Variograma teórico: este será calculado dado que necesitamos de una línea continúa para poder estimar las observaciones que no fueron representadas. 
+* Variograma teórico: este será calculado dado que necesitamos de una línea continúa para poder estimar las observaciones que no fueron representadas. 
 
 A continuación mostraremos cómo es la visualización tanto del variograma nube como del empírico.
 
@@ -326,9 +339,9 @@ plot(bin1, bin.cloud = T, main = "classical estimator")
 plot(bin2, bin.cloud = T, main = "modulus estimator")
 par(mfrow = c(1,2))
 ```
-Como podemos observar a través de estos gráficos podríamos observar un ligero comportamiento anisotrópico en la variable, dado que para algunos puntos el comportamiento del zinc presenta algunas variaciones en ciertas direcciones, pero las mismas son muy pequeñas. 
+Como podemos observar a través de estos gráficos podríamos observar un ligero comportamiento \textbf{anisotrópico} en la variable, dado que para algunos puntos el comportamiento del zinc presenta algunas variaciones en ciertas direcciones, pero las mismas son muy pequeñas. 
 
-En este caso queremos entender si estamos frente a una variable anisotrópica o isotrópica, es decir queremos terminar de confirmar si el comportamiento estadístico varía según la dirección en la que se mida la distancia, es por eso que calculamos el variograma variando las direcciones, de esta manera queremos entender la variabilidad espacial del zinc en diferentes direcciones. 
+En este caso queremos entender si estamos frente a una variable \textbf{anisotrópica} o \textbf{isotrópica}, es decir queremos terminar de confirmar si el comportamiento estadístico varía según la dirección en la que se mida la distancia, es por eso que calculamos el variograma variando las direcciones, de esta manera queremos entender la variabilidad espacial del zinc en diferentes direcciones. 
 Para poder calcularlo vamos a tomar un ángulo y distancia determinados
 
 ```{r}
@@ -346,7 +359,7 @@ lines(vario.3, lty = 3, col = 3)
 lines(vario.4, lty = 4, col = 4)
 legend("bottomright", c("omnidireccional", "0°", "90°", "45°"), col=c(1,2,3,4), lty=c(1,2,3,4))
 ```
-Podemos observar que para diferentes distancias y ángulos la variable en cuestión presenta ciertas variaciones, por lo que estaríamos en presencia de anisotropía.
+Podemos observar que para diferentes distancias y ángulos la variable en cuestión presenta ciertas variaciones, por lo que estaríamos en presencia de \textbf{anisotropía}.
   
 Luego de este análisis pasamos a estudiar los residuos de ambos variogramas para entender si existe un margen para analizar la dependencia espacial.
 
@@ -437,7 +450,17 @@ ggplot(mapping = aes(dist,gamma))+
   theme_classic()
 ```
 
-Analizando nuevamente la isotropía, consideramos el cutoff, el cual es la máxima distancia que tiene sentido considerar entre los puntos, en este caso es 4,200 de distancia. 
+Analizando nuevamente la \textbf{isotropía}, consideramos el \emph{cutoff}, el cual es la máxima distancia que tiene sentido considerar entre los puntos, en este caso es 4,200 de distancia. 
 
+```{r}
+vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 50, map=T)
+plot(vv)
+```
 
+```{r}
+vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 500)
+plot(vv)
+```
+
+Como mencionamos anteriormente estamos en presencia de un proceso \textbf{anisotrópico}, con dirección por continuidad, alcanzando otros valores si corremos la dirección perpendicular al sentido de la mancha. 
 
