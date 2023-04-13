@@ -404,6 +404,40 @@ Como podemos observar tanto para el caso de los modelos con tendencia como sin t
 Además, al haber hecho variogramas con y sin tendencia y obtener resultados tan parecidos, se refuerza nuestra hipótesis de que no tienen tendencia.
 
 ```{r}
-names<- c('Modelo','Error Cuadrático')
+modelo<- c('Modelo Exponencial con tendencia','Modelo Esferíco con tendencia','Modelo Exponencial sin tendencia','Modelo Esferíco sin tendencia')
+error <- c(attr(vtent_exp, 'SSErr'),attr(vtent_sph, 'SSErr'),attr(vt_exp, 'SSErr'),attr(vt_sph, 'SSErr'))
+df_error <-data.frame(modelo,error)
+df_error
 ```
+
+Al probar con otros modelos, el exponencial sigue siendo el mejor ajuste obtenido
+
+```{r}
+vExp <- fit.variogram(vten, vgm(model = "Exp"),fit.method = 2)
+vSph <- fit.variogram(vten, vgm(model = "Sph"),fit.method = 2)
+vMat <- fit.variogram(vten, vgm(model = "Mat", nugget = 1,kappa = 0.5),fit.method = 2)
+vBes <- fit.variogram(vten,vgm("Bes"),fit.method = 2)
+vSte <- fit.variogram(vten,vgm("Ste"),fit.method = 2)
+
+
+vExpLine=variogramLine(vExp,500)
+vSphLine=variogramLine(vSph,500)
+vMatLine=variogramLine(vMat,500)
+vSteLine=variogramLine(vSte,500)
+vBesLine=variogramLine(vBes,500)
+
+ggplot(mapping = aes(dist,gamma))+
+  geom_point(data = vten)+
+  geom_line(data = vExpLine,aes(color="Exponencial"))+
+  geom_line(data = vSphLine,aes(color="Esferico"))+
+  geom_line(data = vMatLine,aes(color="Matern"))+
+  geom_line(data = vSteLine,aes(color="Stein's"))+
+  geom_line(data = vBesLine,aes(color="Bessel"))+
+  scale_color_discrete("Modelo")+
+  theme_classic()
+```
+
+Analizando nuevamente la isotropía, consideramos el cutoff, el cual es la máxima distancia que tiene sentido considerar entre los puntos, en este caso es 4,200 de distancia. 
+
+
 
