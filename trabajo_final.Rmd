@@ -592,7 +592,9 @@ Graficamos la correlación
 
 ```{r}
 par(mfrow=c(1,2))
-plot(valcruz1_ord$observed,valcruz1_ord$observed - valcruz1_ord$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
-plot(valcruz2_ord$observed,valcruz2_ord$observed - valcruz2_ord$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+plot(valcruz1_ord$observed,valcruz1_ord$observed - valcruz1_ord$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)", col = 'cadetblue')
+abline(a = 0, b = 1, col = 'red')
+plot(valcruz2_ord$observed,valcruz2_ord$observed - valcruz2_ord$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)", col = 'cadetblue')
+abline(a = 0, b = 1, col = 'red')
 par(mfrow=c(1,1))
 ```
