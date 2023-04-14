@@ -381,9 +381,9 @@ Podemos observar que para diferentes distancias y ángulos la variable en cuesti
 Luego de este análisis pasamos a estudiar los residuos de ambos variogramas para entender si existe un margen para analizar la dependencia espacial.
 
 ```{r}
-res1.v = variog(meuse, coords = coordinates(meuse), data = meuse$zinc, uvec = seq(0, 1000, by = 50))
+res1.v = variog(base_sin_outliers, coords = coordinates(base_sin_outliers), data = base_sin_outliers$zinc, uvec = seq(0, 1000, by = 50))
 set.seed(123)
-s1 = variog.mc.env(meuse, coords = coordinates(meuse), data = meuse$zinc, obj = res1.v)
+s1 = variog.mc.env(base_sin_outliers, coords = coordinates(base_sin_outliers), data = base_sin_outliers$zinc, obj = res1.v)
 ```
 
 ```{r}
@@ -403,7 +403,7 @@ modelo = "exp"
 ```
 
 ```{r warning=FALSE}
-v <- variogram(zinc~1, meuse)
+v <- variogram(zinc~1, base_sin_outliers)
 vt_exp = fit.variogram(v, vgm(190000, "Exp", 1400, 30000))
 rango_practico = 381.7098 * 3
 plot(v , vt_exp, main = 'Variograma Teórico Exponencial sin tendencia')
@@ -415,7 +415,7 @@ plot(v , vt_sph, main = 'Variograma Teórico Esferíco sin tendencia')
 ```
 
 ```{r}
-vten <- variogram(zinc~x+y, meuse)
+vten <- variogram(zinc~x+y, base_sin_outliers)
 ```
 
 ```{r}
@@ -470,13 +470,128 @@ ggplot(mapping = aes(dist,gamma))+
 Analizando nuevamente la \textbf{isotropía}, consideramos el \emph{cutoff}, el cual es la máxima distancia que tiene sentido considerar entre los puntos, en este caso es 4,200 de distancia.
 
 ```{r}
-vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 50, map=T)
+vv <- variogram(zinc~1, base_sin_outliers, cutoff = 4200, width = 50, map=T)
 plot(vv)
 ```
 
 ```{r}
-vv <- variogram(zinc~1, meuse, cutoff = 4200, width = 500)
+vv <- variogram(zinc~1, base_sin_outliers, cutoff = 4200, width = 500)
 plot(vv)
 ```
 
 Como mencionamos anteriormente estamos en presencia de un proceso \textbf{anisotrópico}, con dirección por continuidad, alcanzando otros valores si corremos la dirección perpendicular al sentido de la mancha.
+
+Por otra parte, al visualizar que nuestros datos no presentan tendencia alguna, para lo que resta del análisis continuaremos considerando modelos sin tendencia.
+
+## Kriging
+
+El objetivo del Kriging es generar una predicción basado en el variograma teórico para el punto donde se desconoce el valor de la variable.
+
+Dado que estamos ante un proceso estacionario sin tendencia procedemos calcularemos un **Kriging Simple**.
+
+```{r}
+datosg<-as.geodata(base_sin_outliers)
+plot(datosg)
+```
+
+Tomamos los datos que venimos usando.
+Para el caso de la grilla, en este caso tomaremos la grilla que viene con la base original.
+
+```{r}
+datos<-base_sin_outliers
+data(base_sin_outliers)
+data(base_sin_outliers.grid)
+```
+
+Realizamos la predicción sobre la nueva grilla con los dos modelos competidores.
+
+Previamente, tenemos que imputar la media del proceso en el terreno, ya que de otra manera estaríamos haciendo un kriging oridnario.
+
+```{r}
+gridded(base_sin_outliers.grid) = ~x+y
+media_zinc = mean(datos$zinc)
+```
+
+```{r}
+# Modelo Exponencial
+k1_ord <- krige(zinc~1, datos, base_sin_outliers.grid, model = vt_exp, nmax = 155, beta = media_zinc)
+# Modelo Esférico
+k2_ord <- krige(zinc~1, datos, base_sin_outliers.grid, model = vt_sph, nmax = 155, beta = media_zinc)
+```
+
+Ahora realizamos las predicciones sobre la grilla nueva para ambos modelos:
+
+```{r}
+# Modelo Exponencial
+spplot(k1_ord["var1.pred"], main = "Kriging simple: Valores Predichos (Exp)", col.regions=terrain.colors)
+spplot(k1_ord["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Exp)", col.regions=terrain.colors)
+```
+
+```{r}
+# Modelo Esférico
+spplot(k2_ord["var1.pred"], main = "Kriging simple: Valores Predichos (Sph)", col.regions=terrain.colors)
+spplot(k2_ord["var1.var"],  main = "Kriging simple: Varianza de las Predicciones (Sph)", col.regions=terrain.colors)
+```
+
+Vemos que ambos modelos ajustan bastante bien, ya que tenemos los mayores valores predichos muy cercano a lo que es la superficie del río.
+A su vez, la varianza de las predicciones se ven bastante similares en ambos casos.
+
+```{r}
+# Tabla_1_ord (Modelo Exponencial)
+Predicciones1_ord = k1_ord$var1.pred
+Varianza1_ord = k1_ord$var1.var
+
+# Armamos la tabla
+x1_ord=k1_ord$x
+y1_ord=k1_ord$y
+Tabla_1_ord=cbind(x1_ord,y1_ord, Predicciones1_ord, Varianza1_ord)
+```
+
+```{r}
+# Tabla_2_ord (Modelo Esférico)
+Predicciones2_ord = k2_ord$var1.pred
+Varianza2_ord = k2_ord$var1.var
+
+# Armamos la tabla
+x2_ord=k2_ord$x
+y2_ord=k2_ord$y
+Tabla_2_ord = cbind(x2_ord,y2_ord, Predicciones2_ord, Varianza2_ord)
+```
+
+Hacemos una validación cruzada de los modelos
+
+```{r}
+#Modelo Exponencial
+valcruz1_ord <- krige.cv(zinc~1, datos, modelo1, nfold=155)
+#Modelo Esférico
+valcruz2_ord <- krige.cv(zinc~1, datos, modelo2, nfold=155)
+```
+
+Calculamos y comparamos los errores de los modelos para entender cuál es que los minimiza, debido a que será el modelo a elegir.
+
+Primero estudiaremos el error cuadrático medio de la predicción, esperando que esta sea lo más cercano a cero posible.
+
+```{r}
+#Modelo Exponencial
+mean(valcruz1_ord$residual)
+# Modelo Esférico
+mean(valcruz2_ord$residual)
+```
+
+Luego estudiaremos los errores cuadráticos medios normalizados, quedandonos con aquel modelo que más se aproxime a 1.
+
+```{r}
+#Modelo Exponencial
+mean(valcruz1_ord$zscore^2)
+#Modelo Esférico
+mean(valcruz2_ord$zscore^2)
+```
+
+Graficamos la correlación
+
+```{r}
+par(mfrow=c(1,2))
+plot(valcruz1_ord$observed,valcruz1_ord$observed - valcruz1_ord$residual,xlab="Observados (Exp)", ylab="Predichos (Exp)")
+plot(valcruz2_ord$observed,valcruz2_ord$observed - valcruz2_ord$residual,xlab="Observados (Sph)", ylab="Predichos (Sph)")
+par(mfrow=c(1,1))
+```

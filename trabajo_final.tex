@@ -1,0 +1,1049 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  12pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{Arial}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in,margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Universidad de San Andrés\\
+Departamento de Matemática y Ciencias\\
+Maestría en Ciencia de Datos}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{TP Final\\
+Asignatura: Estadística Espacial}
+\author{true \and true \and true}
+\date{14-04-2023}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\setstretch{1.5}
+\hypertarget{problemuxe1tica}{%
+\section{Problemática}\label{problemuxe1tica}}
+
+Para este trabajo, contamos con la base de datos ``meuse'' de la
+librería ``sp'' de R como objeto de análisis. En particular, nos
+encontramos con datos sobre las locaciones de grandes concentraciones de
+metales pesados, más precisamente zinc, en la capa superficial del suelo
+de la llanura del río Meuse. Es por eso que, valiéndonos de los recursos
+vistos en el curso, decidimos plantear un análisis sistemático que
+abarque desde una estadística descriptiva, seguido por estudios de
+estacionariedad, isotropía, análisis estructural y predicción.
+
+\hypertarget{libreruxedas}{%
+\section{Librerías}\label{libreruxedas}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}geoR\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}spdep\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}gstat\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{"leafsync"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}mapview\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}leaflet\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}RColorBrewer\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}ggplot2\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}ggmap\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}tibble\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}caret\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}sf\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}sp\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}PerformanceAnalytics\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{"rgdal"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}lattice\textquotesingle{}}\NormalTok{) }
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}grDevices\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}GGally\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}dplyr\textquotesingle{}}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(}\StringTok{\textquotesingle{}geostan\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{metodologuxeda}{%
+\section{Metodología}\label{metodologuxeda}}
+
+En un primer lugar, realizamos la carga de los datos y generamos una
+copia de seguridad de la misma en caso de que necesitemos modificarla
+para algún análisis particular.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(meuse)}
+\NormalTok{copia\_seguridad }\OtherTok{\textless{}{-}}\NormalTok{ meuse}
+\end{Highlighting}
+\end{Shaded}
+
+Comenzamos el análisis exploratorio de la base en cuestión. Vemos que
+consta de 155 registros, y que ninguno cuenta con valores nulos o
+faltantes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Vemos la cantidad de registros y columnas}
+\FunctionTok{class}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)]) }\CommentTok{\# Es de clase "data frame"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "data.frame"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)]) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 155   3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Analizamos duplicados y valores nulos}
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{duplicated}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)])) }\CommentTok{\# No tenemos registros duplicados}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)])) }\CommentTok{\# No tenemos valores NA. }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Vemos algunos datos de la base}
+\FunctionTok{head}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        x      y zinc
+## 1 181072 333611 1022
+## 2 181025 333558 1141
+## 3 181165 333537  640
+## 4 181298 333484  257
+## 5 181307 333330  269
+## 6 181390 333260  281
+\end{verbatim}
+
+Para entender más la base, hicimos una estadística descriptiva
+encontrando que existen valores atípicos de zinc, ya que se alcanzan
+niveles de concentración de 1839 ppm en una muestra donde el tercer
+cuartil se alcanza a las 674.5 ppm.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Vemos la estadística descriptiva}
+\FunctionTok{summary}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)]) }\CommentTok{\# Tenemos valores máximos que superan ampliamente la mediana de la población. }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        x                y               zinc       
+##  Min.   :178605   Min.   :329714   Min.   : 113.0  
+##  1st Qu.:179371   1st Qu.:330762   1st Qu.: 198.0  
+##  Median :179991   Median :331633   Median : 326.0  
+##  Mean   :180005   Mean   :331635   Mean   : 469.7  
+##  3rd Qu.:180630   3rd Qu.:332463   3rd Qu.: 674.5  
+##  Max.   :181390   Max.   :333611   Max.   :1839.0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Sospechamos entonces que habrán eventuales datos atípicos}
+\end{Highlighting}
+\end{Shaded}
+
+Además, estudiamos la distribución de la concentración del metal y su
+relación con las coordenadas registradas en la siguiente salida.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x}\OtherTok{\textless{}{-}}\NormalTok{meuse}\SpecialCharTok{$}\NormalTok{x}
+\NormalTok{y}\OtherTok{\textless{}{-}}\NormalTok{meuse}\SpecialCharTok{$}\NormalTok{y}
+\NormalTok{zinc}\OtherTok{\textless{}{-}}\NormalTok{meuse}\SpecialCharTok{$}\NormalTok{zinc}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(x,y,zinc)}
+\NormalTok{datag }\OtherTok{\textless{}{-}} \FunctionTok{as.geodata}\NormalTok{(data) }\CommentTok{\# Lo llevamos a tipo "geo{-}data"}
+\FunctionTok{plot}\NormalTok{(datag)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#data(meuse)}
+\CommentTok{\#coordinates(meuse) \textless{}{-} \textasciitilde{}x+y}
+\CommentTok{\#proj4string(meuse) \textless{}{-} CRS("+init=epsg:28992")}
+
+\CommentTok{\#mapview(meuse, zcol = c("zinc"), legend = TRUE)}
+\end{Highlighting}
+\end{Shaded}
+
+Aquí podemos observar que todos los puntos se encuentran dispersos a lo
+largo del río, teniendo ciertos lugares donde los niveles de
+concentración del metal parecen agruparse. Por ejemplo, para el caso de
+los puntos rojos, notamos que estos son los valores que reflejan el
+mayor nivel de concentración de zinc, y que están agrupados muy próximos
+al río; mientras que los puntos que con menores niveles de concentración
+se hallan más dispersos y a una distancia mayor en relación al río.
+
+Haciendo referencia a la relación entre la variable con cada coordenada,
+podemos notar una muy leve correlación entre los niveles de
+concentración por zinc con las coordenada x e y, tratándose en ambos
+casos de una magnitud muy chica y sin significancia estadística para los
+niveles usualmente utilizados.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(meuse)}
+\CommentTok{\# Definimos una función para ver las correlaciones en conjunto con los plots}
+\NormalTok{my\_fn }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data, mapping, ...)\{}
+\NormalTok{  p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{mapping =}\NormalTok{ mapping) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} 
+    \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method=}\NormalTok{loess, }\AttributeTok{fill=}\StringTok{"red"}\NormalTok{, }\AttributeTok{color=}\StringTok{"red"}\NormalTok{, ...) }\SpecialCharTok{+}
+    \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method=}\NormalTok{lm, }\AttributeTok{fill=}\StringTok{"blue"}\NormalTok{, }\AttributeTok{color=}\StringTok{"blue"}\NormalTok{, ...)}
+\NormalTok{  p}
+\NormalTok{\}}
+
+\NormalTok{g }\OtherTok{=} \FunctionTok{ggpairs}\NormalTok{(meuse[,}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}y\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}zinc\textquotesingle{}}\NormalTok{)],}\AttributeTok{columns =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\AttributeTok{lower =} \FunctionTok{list}\NormalTok{(}\AttributeTok{continuous =}\NormalTok{ my\_fn))}
+\NormalTok{g}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+Respecto a la distribución del zinc, para alcanzar una mayor
+profundidad, hicimos el siguiente test de Shapiro-Wilk para evaluar su
+normalidad de la distribución con mayor rigurosidad.
+
+\[H_0 = Datos \thicksim N(\mu,\sigma) ~~~~ vs ~~~~ H_1 = Datos \nsim N(\mu,\sigma) \]
+
+Como resultado, obtuvimos un p-valor de 3.28e-12, por lo cual rechazamos
+la hipótesis nula de normalidad. También hicimos el ejercicio
+transformando la variable con logaritmo, y obtuvimos un resultado muy
+similar a favor de la no normalidad de los datos. Esto también se
+evidencia si comparamos los cuantiles de una normal con la distribución
+de los datos en un QQ-Plot. Luego, como tanto los test de Moran como el
+de Geary presuponen una distribución normal de los datos, tendremos que
+hacer ambos tests considerando sus versiones aleatorizadas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{shapiro.test}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  meuse$zinc
+## W = 0.82812, p-value = 3.28e-12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Vemos como parece quedar con una distribución más cercanaa a la normal si lo llevamos a logaritmo}
+\NormalTok{meuse}\SpecialCharTok{$}\NormalTok{lnZn }\OtherTok{\textless{}{-}} \FunctionTok{log}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{base =} \FunctionTok{exp}\NormalTok{(}\DecValTok{1}\NormalTok{))}
+\FunctionTok{shapiro.test}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{lnZn)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  meuse$lnZn
+## W = 0.95092, p-value = 2.901e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Igual rechazamos normalidad}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{=} \FunctionTok{as.data.frame}\NormalTok{(zinc)}
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{sample=}\NormalTok{zinc)) }\SpecialCharTok{+} \FunctionTok{stat\_qq}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{stat\_qq\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}QQ Plot de la distribución del Zinc\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust=}\FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\hypertarget{moran---geary}{%
+\subsection{Moran - Geary}\label{moran---geary}}
+
+\hypertarget{moral-analuxedsis-global-y-local}{%
+\subsubsection{Moral: Analísis global y
+local}\label{moral-analuxedsis-global-y-local}}
+
+Para continuar con el análisis geoestadístico, apelamos a los índices y
+tests vistos en clase, analizando así si es que existe -o no- una
+autocorrelación espacial.
+
+En la primera parte, para poder calcular ambos índices para determinar
+la autocorrelación de nuestros datos,debemos definir los pesos para cada
+una de las observaciones para así definir una grilla la cual nos
+determine el vecindario y los vecinos de cada punto.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(meuse)}
+\FunctionTok{coordinates}\NormalTok{(meuse) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{)}
+\NormalTok{coordenadas }\OtherTok{\textless{}{-}} \FunctionTok{coordinates}\NormalTok{(meuse)}
+\NormalTok{grilla }\OtherTok{\textless{}{-}} \FunctionTok{dnearneigh}\NormalTok{(meuse,}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{)}
+\NormalTok{pesos }\OtherTok{\textless{}{-}} \FunctionTok{nb2listw}\NormalTok{(grilla, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(grilla, coordenadas, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{cex =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+Para evaluar la autocorrelación espacial en mayor profundidad, vamos a
+calcular los índices local y global de Moran como también el de Geary.
+Así buscaremos comprender la variación del fenómeno, en este caso del
+zinc en el río Meuse, en un marco geográfico de análisis. Los posibles
+resultados son:
+
+\begin{itemize}
+\item
+  Notar que hay evidencia a favor de la existencia de autocorrelación
+  positiva. En este caso deberíamos notar que el zinc se agrupa en zonas
+  uniformes conformando de esta manera una especie de cluster.
+\item
+  Hallar evidencia de autocorrelación negativa, notando que el zinc se
+  encuentra disperso, es decir que la presencia de zinc sea disímil en
+  sus lugares aledaños/vecinos.
+\item
+  No encontrar evidencia de autocorrelación espacial, lo que nos diría
+  que la variable tiene un comportamiento aleatorio en el estudio del
+  fenómeno en el terreno.
+\end{itemize}
+
+En una primera instancia calculamos el Índice de Moran Global mediante
+la ejecución del test de Moran Global en su versión aleatorizada. Estos,
+independientemente de la opción que elijamos para calcular los pesos,
+nos arroja resultados que nos permiten llegar a las mismas conclusiones:
+
+\begin{itemize}
+\item
+  Obtenemos un p-valor menor a los niveles estadísticos usualmente
+  utilizados, permitiendo concluir que hay evidencia suficiente para
+  rechazar la hipótesis nula de que no existe autocorrelación espacial.
+\item
+  Se obtiene un valor de índice de Moran (IM) superior a su valor
+  esperado, lo cual reafirma la conclusión de que existe autocorrelación
+  espacial.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{moran.test}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc, }\FunctionTok{nb2listw}\NormalTok{(grilla, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{), }\AttributeTok{randomisation =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Moran I test under randomisation
+## 
+## data:  meuse$zinc  
+## weights: nb2listw(grilla, style = "W")    
+## 
+## Moran I statistic standard deviate = 10.188, p-value < 2.2e-16
+## alternative hypothesis: greater
+## sample estimates:
+## Moran I statistic       Expectation          Variance 
+##       0.320600991      -0.006493506       0.001030686
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#moran.test(meuse$zinc, nb2listw(grilla, style = "S"), randomisation = TRUE)}
+\CommentTok{\#moran.test(meuse$zinc, nb2listw(grilla, style = "B"), randomisation = TRUE)}
+\CommentTok{\#moran.test(meuse$zinc, nb2listw(grilla, style = "C"), randomisation = TRUE)}
+\CommentTok{\#moran.test(meuse$zinc, nb2listw(grilla, style = "U"), randomisation = TRUE)}
+\CommentTok{\#moran.test(meuse$zinc, nb2listw(grilla, style = "minmax"), randomisation = TRUE)}
+\end{Highlighting}
+\end{Shaded}
+
+De manera grafica, también podemos evaluar cuan similar es cada dato con
+respecto a sus vecinos. A través de este índice podemos encontrar datos
+atípicos, es decir posibles outliers espaciales.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{M }\OtherTok{\textless{}{-}} \FunctionTok{moran.plot}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc,pesos,}\AttributeTok{zero.policy=}\NormalTok{F,}\AttributeTok{col=}\DecValTok{3}\NormalTok{, }\AttributeTok{quiet=}\ConstantTok{TRUE}\NormalTok{,}\AttributeTok{labels=}\NormalTok{T,}\AttributeTok{xlab =} \StringTok{"zinc"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"lag(zinc)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+Encontramos luego que hay eventuales candidatos a outliers espaciales,
+como son por ejemplo los registros 69 y 118, los cuales muestran un
+valor muy distinto a sus observaciones cercanas. Además, si vemos las
+observaciones que tienen un Índice de Moran Local (IML) muy bajo a nivel
+observación, nos encontramos con las observaciones que sospechamos
+outliers de manera gráfica muestran efectivamente un IML bajo:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ML }\OtherTok{\textless{}{-}} \FunctionTok{localmoran}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc, pesos, }\AttributeTok{alternative =}\StringTok{"less"}\NormalTok{)}
+\NormalTok{IML }\OtherTok{\textless{}{-}}\FunctionTok{data.frame}\NormalTok{(ML,}\AttributeTok{row.names=}\NormalTok{elevation}\SpecialCharTok{$}\NormalTok{Casos)}
+
+\CommentTok{\#Potenciales outliers}
+\NormalTok{potenciales\_outliers }\OtherTok{=} \FunctionTok{subset}\NormalTok{(IML, IML}\SpecialCharTok{$}\NormalTok{Ii }\SpecialCharTok{\textless{}} \DecValTok{0} \SpecialCharTok{\&}\NormalTok{ IML}\SpecialCharTok{$}\NormalTok{Pr.z...E.Ii.. }\SpecialCharTok{\textless{}} \FloatTok{0.05}\NormalTok{)}
+\NormalTok{potenciales\_outliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              Ii          E.Ii       Var.Ii      Z.Ii Pr.z...E.Ii..
+## 41  -0.22547290 -0.0014302294 0.0109317773 -2.142818  0.0160638455
+## 43  -0.32244456 -0.0041844569 0.0299942797 -1.837651  0.0330569422
+## 57  -0.07890771 -0.0000689982 0.0006476965 -3.097803  0.0009748063
+## 69  -0.66536542 -0.0046098322 0.0748935167 -2.414453  0.0078794310
+## 98  -0.38567470 -0.0039043753 0.0263977957 -2.349732  0.0093934649
+## 121 -0.51601760 -0.0053051084 0.0495390824 -2.294576  0.0108787093
+## 122 -0.41767062 -0.0022780643 0.0299336116 -2.400928  0.0081767750
+## 125 -0.31610960 -0.0020927818 0.0141751997 -2.637475  0.0041762915
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Nos quedamos con la base sin outliers}
+\NormalTok{base\_sin\_outliers }\OtherTok{=}\NormalTok{ copia\_seguridad[}\SpecialCharTok{!}\NormalTok{(}\FunctionTok{rownames}\NormalTok{(copia\_seguridad) }\SpecialCharTok{\%in\%} \FunctionTok{rownames}\NormalTok{(potenciales\_outliers)),]}
+
+\FunctionTok{coordinates}\NormalTok{(base\_sin\_outliers) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{)}
+\NormalTok{coordenadas\_sin\_outliers }\OtherTok{\textless{}{-}} \FunctionTok{coordinates}\NormalTok{(base\_sin\_outliers)}
+\NormalTok{grilla\_sin\_outliers }\OtherTok{\textless{}{-}} \FunctionTok{dnearneigh}\NormalTok{(base\_sin\_outliers,}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{)}
+\NormalTok{pesos\_sin\_outliers }\OtherTok{\textless{}{-}} \FunctionTok{nb2listw}\NormalTok{(grilla\_sin\_outliers, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Si volvemos a hacer el gráfico de Moran, de hecho nos cambia la
+pendiente, puesto que es un método que es sensible a outliers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{M\_sin\_outliers }\OtherTok{\textless{}{-}} \FunctionTok{moran.plot}\NormalTok{(base\_sin\_outliers}\SpecialCharTok{$}\NormalTok{zinc,pesos\_sin\_outliers,}\AttributeTok{zero.policy=}\NormalTok{F,}\AttributeTok{col=}\DecValTok{3}\NormalTok{, }\AttributeTok{quiet=}\ConstantTok{TRUE}\NormalTok{,}\AttributeTok{labels=}\NormalTok{T,}\AttributeTok{xlab =} \StringTok{"zinc"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"lag(zinc)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{moran.test}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc, }\FunctionTok{nb2listw}\NormalTok{(grilla, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{), }\AttributeTok{randomisation =} \ConstantTok{TRUE}\NormalTok{) }\CommentTok{\# Test con outliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Moran I test under randomisation
+## 
+## data:  meuse$zinc  
+## weights: nb2listw(grilla, style = "W")    
+## 
+## Moran I statistic standard deviate = 10.188, p-value < 2.2e-16
+## alternative hypothesis: greater
+## sample estimates:
+## Moran I statistic       Expectation          Variance 
+##       0.320600991      -0.006493506       0.001030686
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{moran.test}\NormalTok{(base\_sin\_outliers}\SpecialCharTok{$}\NormalTok{zinc, }\FunctionTok{nb2listw}\NormalTok{(grilla\_sin\_outliers, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{), }\AttributeTok{randomisation =} \ConstantTok{TRUE}\NormalTok{) }\CommentTok{\# Test sin outliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Moran I test under randomisation
+## 
+## data:  base_sin_outliers$zinc  
+## weights: nb2listw(grilla_sin_outliers, style = "W")    
+## 
+## Moran I statistic standard deviate = 9.7328, p-value < 2.2e-16
+## alternative hypothesis: greater
+## sample estimates:
+## Moran I statistic       Expectation          Variance 
+##       0.322545398      -0.006849315       0.001145406
+\end{verbatim}
+
+\hypertarget{geary}{%
+\subsubsection{Geary}\label{geary}}
+
+Con este índice vamos a medir la asociación espacial a través del cambio
+y de su varianza. De esta manera evaluaremos si la distribución del zinc
+en el río Meuse es aleatoria o no, afirmando que hay una alta
+autocorrelación espacial si la diferencia de los valores del zinc en
+diferentes lugares son similares y la distancia entre los lugares es
+pequeña.
+
+Este índice es más sensible a outliers que el índice de Moran. Toma
+valores que van entre 0 y 2, donde:
+
+\begin{itemize}
+\item
+  1 indica una distribución espacial aleatoria de la variable.
+\item
+  valores menores que 1 indican una autocorrelación positiva, siendo los
+  valores similares cercanos unos a otros.
+\item
+  valores mayores que 1 indican una autocorrelación negativa, siendo los
+  valores diferentes cerca unos de otros.
+\end{itemize}
+
+En esta segunda instancia calculamos el Índice de Geary mediante la
+ejecución del test de Geary en su versión aleatorizada. Estos,
+independientemente de la opción que elijamos para calcular los pesos,
+nos arroja resultados que nos permiten llegar a conclusiones similares:
+
+\begin{itemize}
+\item
+  Obtenemos un p-valor menor a los niveles estadísticos usualmente
+  utilizados, permitiendo concluir que hay evidencia suficiente para
+  rechazar la hipótesis nula de que no existe autocorrelación espacial.
+\item
+  Se obtiene un valor de índice de Geary (IG) superior a su valor
+  esperado, lo cual reafirma la conclusión de que existe autocorrelación
+  espacial.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{geary.test}\NormalTok{(meuse}\SpecialCharTok{$}\NormalTok{zinc, }\FunctionTok{nb2listw}\NormalTok{(grilla, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{),}\AttributeTok{randomisation =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Geary C test under randomisation
+## 
+## data:  meuse$zinc 
+## weights: nb2listw(grilla, style = "W") 
+## 
+## Geary C statistic standard deviate = 9.9183, p-value < 2.2e-16
+## alternative hypothesis: Expectation greater than statistic
+## sample estimates:
+## Geary C statistic       Expectation          Variance 
+##       0.633355716       1.000000000       0.001366521
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#geary.test(meuse$zinc, nb2listw(grilla, style = "S"),randomisation = TRUE)}
+\CommentTok{\#geary.test(meuse$zinc, nb2listw(grilla, style = "B"),randomisation = TRUE)}
+\CommentTok{\#geary.test(meuse$zinc, nb2listw(grilla, style = "C"),randomisation = TRUE)}
+\CommentTok{\#geary.test(meuse$zinc, nb2listw(grilla, style = "U"),randomisation = TRUE)}
+\CommentTok{\#geary.test(meuse$zinc, nb2listw(grilla, style = "minmax"),randomisation = TRUE) }
+\end{Highlighting}
+\end{Shaded}
+
+En base a los resultados obtenidos nos indica que en sitios conectados
+los valores del zinc son similares. Además, obtenemos los mismos
+resultados en caso de purgar los valores que sospechamos outliers
+previamente.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{geary.test}\NormalTok{(base\_sin\_outliers}\SpecialCharTok{$}\NormalTok{zinc, }\FunctionTok{nb2listw}\NormalTok{(grilla\_sin\_outliers, }\AttributeTok{style =} \StringTok{"W"}\NormalTok{), }\AttributeTok{randomisation =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Geary C test under randomisation
+## 
+## data:  base_sin_outliers$zinc 
+## weights: nb2listw(grilla_sin_outliers, style = "W") 
+## 
+## Geary C statistic standard deviate = 9.4415, p-value < 2.2e-16
+## alternative hypothesis: Expectation greater than statistic
+## sample estimates:
+## Geary C statistic       Expectation          Variance 
+##       0.626140212       1.000000000       0.001567976
+\end{verbatim}
+
+Al arrojar valores menores a 1, podemos afirmar que hay autocorrelación
+positiva, es decir que los valores similares tienden a estar cerca unos
+de otros.
+
+\hypertarget{variograma}{%
+\subsection{Variograma}\label{variograma}}
+
+El variograma es una herramienta para el análisis geoestadístico
+utilizada para describir la variabilidad espacial de un fenómeno, en
+este caso el zinc. Hay tres tipos de variogramas que se utilizaran para
+el análisis:
+
+\begin{itemize}
+\item
+  \textbf{Variograma nube:} podemos graficar la distancia de los puntos
+  en el espacio versus la variable de cambio (semi varianza al
+  cuadrado).
+\item
+  \textbf{Variograma empírico o experimental:} Como con el variograma
+  nube no alcanza vamos a calcular el variograma empírico, el cual va a
+  ser construido a partir del variograma nube, dividiendo el eje de
+  distancias en intervalos, tomando un representante sobre el cual
+  promedió con todos los puntos que caen dentro del intervalo,
+  consiguiendo así la representación del mismo.
+\item
+  \textbf{Variograma teórico:} este será calculado dado que necesitamos
+  de una línea continúa para poder estimar las observaciones que no
+  fueron representadas.
+\end{itemize}
+
+Tras haber realizado tanto los cálculos de los índices como los análisis
+de autocorrelación y la evaluación de potenciales outliers, procedemos
+con el \textbf{análisis estructural}. Para esto construiremos el
+\textbf{variograma nube}, tomando el dataset sin las observaciones que
+consideramos como outliers.
+
+A continuación mostraremos cómo es la visualización tanto del variograma
+nube como del empírico.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(nube\_clasica, }\AttributeTok{col =} \StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Variograma Nube}\SpecialCharTok{\textbackslash{}n}\StringTok{ {-} classical estimator"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(nube\_CH,}\AttributeTok{col =} \StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,  }\AttributeTok{main =} \StringTok{"Variograma Nube}\SpecialCharTok{\textbackslash{}n}\StringTok{ {-}modulus estimator"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Lo primero que podemos observar es que no parece haber una tendencia
+clara. Esto era de esperarse luego de lo observado en el análisis
+exploratorio previo, donde las correlaciones entre las coordenadas y los
+niveles de concentración de zinc eran débiles.
+
+Luego, para analizar la isotropía y saber si es correcto que nuestro
+variograma sea omnidireccional, realizamos el variograma mapa.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vv }\OtherTok{\textless{}{-}} \FunctionTok{variogram}\NormalTok{(zinc}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, base\_sin\_outliers, }\AttributeTok{cutoff =} \DecValTok{3000}\NormalTok{, }\AttributeTok{width =} \DecValTok{200}\NormalTok{, }\AttributeTok{map=}\NormalTok{T)}
+\FunctionTok{plot}\NormalTok{(vv)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-24-1.pdf}
+
+Parece entonces un proceso Anisotrópico, con dirección por continuidad,
+alcanzando otros valores si corremos la dirección perpendicular sentido
+de la mancha.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(bin\_clasico,}\AttributeTok{col =} \StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,  }\AttributeTok{main =} \StringTok{"Variograma Empírico}\SpecialCharTok{\textbackslash{}n}\StringTok{{-} classical estimator"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(bin\_CH,}\AttributeTok{col =} \StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,  }\AttributeTok{main =} \StringTok{"Variograma Empírico}\SpecialCharTok{\textbackslash{}n}\StringTok{ {-} modulus estimator"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-25-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+asdsaasdads
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(bin1, }\AttributeTok{bin.cloud =}\NormalTok{ T, }\AttributeTok{main =} \StringTok{"classical estimator"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(bin2, }\AttributeTok{bin.cloud =}\NormalTok{ T, }\AttributeTok{main =} \StringTok{"modulus estimator"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Como podemos observar a través de estos gráficos podríamos observar un
+ligero comportamiento \textbf{anisotrópico} en la variable, dado que
+para algunos puntos el comportamiento del zinc presenta algunas
+variaciones en ciertas direcciones, pero las mismas son muy pequeñas.
+
+En este caso queremos entender si estamos frente a una variable
+\textbf{anisotrópica} o \textbf{isotrópica}, es decir queremos terminar
+de confirmar si el comportamiento estadístico varía según la dirección
+en la que se mida la distancia, es por eso que calculamos el variograma
+variando las direcciones, de esta manera queremos entender la
+variabilidad espacial del zinc en diferentes direcciones. Para poder
+calcularlo vamos a tomar un ángulo y distancia determinados
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vario}\FloatTok{.2} \OtherTok{\textless{}{-}} \FunctionTok{variog}\NormalTok{(meuse, }\AttributeTok{coords =} \FunctionTok{coordinates}\NormalTok{(meuse), }\AttributeTok{data =}\NormalTok{ meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{uvec =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1000}\NormalTok{, }\AttributeTok{by =} \DecValTok{50}\NormalTok{), }\AttributeTok{dir=}\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## variog: computing variogram for direction = 0 degrees (0 radians)
+##         tolerance angle = 22.5 degrees (0.393 radians)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vario}\FloatTok{.3} \OtherTok{\textless{}{-}} \FunctionTok{variog}\NormalTok{(meuse, }\AttributeTok{coords =} \FunctionTok{coordinates}\NormalTok{(meuse), }\AttributeTok{data =}\NormalTok{ meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{uvec =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1000}\NormalTok{, }\AttributeTok{by =} \DecValTok{50}\NormalTok{), }\AttributeTok{dir=}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## variog: computing variogram for direction = 90 degrees (1.571 radians)
+##         tolerance angle = 22.5 degrees (0.393 radians)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vario}\FloatTok{.4} \OtherTok{\textless{}{-}} \FunctionTok{variog}\NormalTok{(meuse, }\AttributeTok{coords =} \FunctionTok{coordinates}\NormalTok{(meuse), }\AttributeTok{data =}\NormalTok{ meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{uvec =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1000}\NormalTok{, }\AttributeTok{by =} \DecValTok{50}\NormalTok{), }\AttributeTok{dir=}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## variog: computing variogram for direction = 45 degrees (0.785 radians)
+##         tolerance angle = 22.5 degrees (0.393 radians)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(bin\_clasico, }\AttributeTok{type=}\StringTok{"l"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(vario}\FloatTok{.2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(vario}\FloatTok{.3}\NormalTok{, }\AttributeTok{lty =} \DecValTok{3}\NormalTok{, }\AttributeTok{col =} \DecValTok{3}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(vario}\FloatTok{.4}\NormalTok{, }\AttributeTok{lty =} \DecValTok{4}\NormalTok{, }\AttributeTok{col =} \DecValTok{4}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"bottomright"}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\StringTok{"omnidireccional"}\NormalTok{, }\StringTok{"0°"}\NormalTok{, }\StringTok{"90°"}\NormalTok{, }\StringTok{"45°"}\NormalTok{), }\AttributeTok{col=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{), }\AttributeTok{lty=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+Podemos observar que para diferentes distancias y ángulos la variable en
+cuestión presenta ciertas variaciones, por lo que estaríamos en
+presencia de \textbf{anisotropía}.
+
+Luego de este análisis pasamos a estudiar los residuos de ambos
+variogramas para entender si existe un margen para analizar la
+dependencia espacial.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{res1.v }\OtherTok{=} \FunctionTok{variog}\NormalTok{(meuse, }\AttributeTok{coords =} \FunctionTok{coordinates}\NormalTok{(meuse), }\AttributeTok{data =}\NormalTok{ meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{uvec =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1000}\NormalTok{, }\AttributeTok{by =} \DecValTok{50}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## variog: computing omnidirectional variogram
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{s1 }\OtherTok{=} \FunctionTok{variog.mc.env}\NormalTok{(meuse, }\AttributeTok{coords =} \FunctionTok{coordinates}\NormalTok{(meuse), }\AttributeTok{data =}\NormalTok{ meuse}\SpecialCharTok{$}\NormalTok{zinc, }\AttributeTok{obj =}\NormalTok{ res1.v)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## variog.env: generating 99 simulations by permutating data values
+## variog.env: computing the empirical variogram for the 99 simulations
+## variog.env: computing the envelops
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(res1.v, }\AttributeTok{env =}\NormalTok{ s1)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-31-1.pdf}
+
+Podemos observar, usando una simulación simple de Monte Carlo, que
+existe el margen para estudiar la dependencia espacial, sobre todo para
+distancias cortas.
+
+Con estos resultados procedemos a ajustar el variograma teórico, para
+ello consideraremos los siguientes parámetros:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{res1.v.ef }\OtherTok{=} \FunctionTok{eyefit}\NormalTok{(res1.v)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sigmasq }\OtherTok{=} \FloatTok{143151.79}
+\NormalTok{phi }\OtherTok{=} \FloatTok{333.33}
+\NormalTok{nugget }\OtherTok{=} \FloatTok{17893.97}
+\NormalTok{modelo }\OtherTok{=} \StringTok{"exp"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{v }\OtherTok{\textless{}{-}} \FunctionTok{variogram}\NormalTok{(zinc}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, meuse)}
+\NormalTok{vt\_exp }\OtherTok{=} \FunctionTok{fit.variogram}\NormalTok{(v, }\FunctionTok{vgm}\NormalTok{(}\DecValTok{190000}\NormalTok{, }\StringTok{"Exp"}\NormalTok{, }\DecValTok{1400}\NormalTok{, }\DecValTok{30000}\NormalTok{))}
+\NormalTok{rango\_practico }\OtherTok{=} \FloatTok{381.7098} \SpecialCharTok{*} \DecValTok{3}
+\FunctionTok{plot}\NormalTok{(v , vt\_exp, }\AttributeTok{main =} \StringTok{\textquotesingle{}Variograma Teórico Exponencial sin tendencia\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vt\_sph }\OtherTok{=} \FunctionTok{fit.variogram}\NormalTok{(v, }\FunctionTok{vgm}\NormalTok{(}\DecValTok{190000}\NormalTok{, }\StringTok{"Sph"}\NormalTok{, }\DecValTok{1400}\NormalTok{, }\DecValTok{30000}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(v , vt\_sph, }\AttributeTok{main =} \StringTok{\textquotesingle{}Variograma Teórico Esferíco sin tendencia\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-34-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vten }\OtherTok{\textless{}{-}} \FunctionTok{variogram}\NormalTok{(zinc}\SpecialCharTok{\textasciitilde{}}\NormalTok{x}\SpecialCharTok{+}\NormalTok{y, meuse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vtent\_exp }\OtherTok{=} \FunctionTok{fit.variogram}\NormalTok{(vten, }\FunctionTok{vgm}\NormalTok{(}\DecValTok{190000}\NormalTok{, }\StringTok{"Exp"}\NormalTok{, }\DecValTok{1400}\NormalTok{, }\DecValTok{30000}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(vten , vtent\_exp, }\AttributeTok{main =} \StringTok{\textquotesingle{}Variograma Teórico Exponencial con tendencia\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-36-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vtent\_sph }\OtherTok{=} \FunctionTok{fit.variogram}\NormalTok{(vten, }\FunctionTok{vgm}\NormalTok{(}\DecValTok{190000}\NormalTok{, }\StringTok{"Sph"}\NormalTok{, }\DecValTok{1400}\NormalTok{, }\DecValTok{30000}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(vten , vtent\_sph,}\AttributeTok{main =} \StringTok{\textquotesingle{}Variograma Teórico Esferíco con tendencia\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-37-1.pdf}
+
+Como podemos observar tanto para el caso de los modelos con tendencia
+como sin tendencia el exponencial es el que mejor se ajusta a nuestro
+variograma. Ahora bien, la pregunta es: ¿el modelo correcto es con o sin
+tendencia?, no podemos mezclar los errores cuadráticos entre modelos con
+y sin tendencia.Para ello, hay que analizar los plots, pero como vimos
+antes, no hay patrones claros. Además, al haber hecho variogramas con y
+sin tendencia y obtener resultados tan parecidos, se refuerza nuestra
+hipótesis de que no tienen tendencia.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modelo}\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Modelo Exponencial con tendencia\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Modelo Esferíco con tendencia\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Modelo Exponencial sin tendencia\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Modelo Esferíco sin tendencia\textquotesingle{}}\NormalTok{)}
+\NormalTok{error }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{attr}\NormalTok{(vtent\_exp, }\StringTok{\textquotesingle{}SSErr\textquotesingle{}}\NormalTok{),}\FunctionTok{attr}\NormalTok{(vtent\_sph, }\StringTok{\textquotesingle{}SSErr\textquotesingle{}}\NormalTok{),}\FunctionTok{attr}\NormalTok{(vt\_exp, }\StringTok{\textquotesingle{}SSErr\textquotesingle{}}\NormalTok{),}\FunctionTok{attr}\NormalTok{(vt\_sph, }\StringTok{\textquotesingle{}SSErr\textquotesingle{}}\NormalTok{))}
+\NormalTok{df\_error }\OtherTok{\textless{}{-}}\FunctionTok{data.frame}\NormalTok{(modelo,error)}
+\NormalTok{df\_error}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                             modelo   error
+## 1 Modelo Exponencial con tendencia 1975144
+## 2    Modelo Esferíco con tendencia 2668378
+## 3 Modelo Exponencial sin tendencia 1791466
+## 4    Modelo Esferíco sin tendencia 2223258
+\end{verbatim}
+
+Al probar con otros modelos, el exponencial sigue siendo el mejor ajuste
+obtenido
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vExp }\OtherTok{\textless{}{-}} \FunctionTok{fit.variogram}\NormalTok{(vten, }\FunctionTok{vgm}\NormalTok{(}\AttributeTok{model =} \StringTok{"Exp"}\NormalTok{),}\AttributeTok{fit.method =} \DecValTok{2}\NormalTok{)}
+\NormalTok{vSph }\OtherTok{\textless{}{-}} \FunctionTok{fit.variogram}\NormalTok{(vten, }\FunctionTok{vgm}\NormalTok{(}\AttributeTok{model =} \StringTok{"Sph"}\NormalTok{),}\AttributeTok{fit.method =} \DecValTok{2}\NormalTok{)}
+\NormalTok{vMat }\OtherTok{\textless{}{-}} \FunctionTok{fit.variogram}\NormalTok{(vten, }\FunctionTok{vgm}\NormalTok{(}\AttributeTok{model =} \StringTok{"Mat"}\NormalTok{, }\AttributeTok{nugget =} \DecValTok{1}\NormalTok{,}\AttributeTok{kappa =} \FloatTok{0.5}\NormalTok{),}\AttributeTok{fit.method =} \DecValTok{2}\NormalTok{)}
+\NormalTok{vBes }\OtherTok{\textless{}{-}} \FunctionTok{fit.variogram}\NormalTok{(vten,}\FunctionTok{vgm}\NormalTok{(}\StringTok{"Bes"}\NormalTok{),}\AttributeTok{fit.method =} \DecValTok{2}\NormalTok{)}
+\NormalTok{vSte }\OtherTok{\textless{}{-}} \FunctionTok{fit.variogram}\NormalTok{(vten,}\FunctionTok{vgm}\NormalTok{(}\StringTok{"Ste"}\NormalTok{),}\AttributeTok{fit.method =} \DecValTok{2}\NormalTok{)}
+
+
+\NormalTok{vExpLine}\OtherTok{=}\FunctionTok{variogramLine}\NormalTok{(vExp,}\DecValTok{500}\NormalTok{)}
+\NormalTok{vSphLine}\OtherTok{=}\FunctionTok{variogramLine}\NormalTok{(vSph,}\DecValTok{500}\NormalTok{)}
+\NormalTok{vMatLine}\OtherTok{=}\FunctionTok{variogramLine}\NormalTok{(vMat,}\DecValTok{500}\NormalTok{)}
+\NormalTok{vSteLine}\OtherTok{=}\FunctionTok{variogramLine}\NormalTok{(vSte,}\DecValTok{500}\NormalTok{)}
+\NormalTok{vBesLine}\OtherTok{=}\FunctionTok{variogramLine}\NormalTok{(vBes,}\DecValTok{500}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(dist,gamma))}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vten)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vExpLine,}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\StringTok{"Exponencial"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vSphLine,}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\StringTok{"Esferico"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vMatLine,}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\StringTok{"Matern"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vSteLine,}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\StringTok{"Stein\textquotesingle{}s"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ vBesLine,}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\StringTok{"Bessel"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_discrete}\NormalTok{(}\StringTok{"Modelo"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-39-1.pdf}
+
+Analizando nuevamente la \textbf{isotropía}, consideramos el
+\emph{cutoff}, el cual es la máxima distancia que tiene sentido
+considerar entre los puntos, en este caso es 4,200 de distancia.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vv }\OtherTok{\textless{}{-}} \FunctionTok{variogram}\NormalTok{(zinc}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, meuse, }\AttributeTok{cutoff =} \DecValTok{4200}\NormalTok{, }\AttributeTok{width =} \DecValTok{50}\NormalTok{, }\AttributeTok{map=}\NormalTok{T)}
+\FunctionTok{plot}\NormalTok{(vv)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-40-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vv }\OtherTok{\textless{}{-}} \FunctionTok{variogram}\NormalTok{(zinc}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, meuse, }\AttributeTok{cutoff =} \DecValTok{4200}\NormalTok{, }\AttributeTok{width =} \DecValTok{500}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(vv)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabajo_final_files/figure-latex/unnamed-chunk-41-1.pdf}
+
+Como mencionamos anteriormente estamos en presencia de un proceso
+\textbf{anisotrópico}, con dirección por continuidad, alcanzando otros
+valores si corremos la dirección perpendicular al sentido de la mancha.
+
+\end{document}
