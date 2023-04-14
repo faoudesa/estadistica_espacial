@@ -231,7 +231,7 @@ potenciales_outliers
 
 ```{r warning=FALSE}
 # Nos quedamos con la base sin outliers
-base_sin_outliers = copia_seguridad[!(rownames(copia_seguridad) %in% rownames(potenciales_outliers)),]
+base_sin_outliers = copia_seguridad[!(rownames(copia_seguridad) %in% c(rownames(potenciales_outliers),"76")),]
 
 coordinates(base_sin_outliers) <- c("x", "y")
 coordenadas_sin_outliers <- coordinates(base_sin_outliers)
@@ -395,9 +395,6 @@ Con estos resultados procedemos a ajustar el variograma teórico, para ello cons
 
 ```{r}
 res1.v.ef = eyefit(res1.v)
-sigmasq = 143151.79
-phi = 333.33
-nugget = 17893.97
 modelo = "exp"
 ```
 
@@ -518,9 +515,9 @@ media_zinc = mean(base_sin_outliers$zinc)
 
 ```{r}
 # Modelo Exponencial
-k1_ord <- krige(zinc~1, datos, meuse.grid, model = vt_exp, nmax = 155, beta = media_zinc)
+k1_ord <- krige(zinc~1, base_sin_outliers, meuse.grid, model = vt_exp, nmax = 155, beta = media_zinc)
 # Modelo Esférico
-k2_ord <- krige(zinc~1, datos, meuse.grid, model = vt_sph, nmax = 155, beta = media_zinc)
+k2_ord <- krige(zinc~1, base_sin_outliers, meuse.grid, model = vt_sph, nmax = 155, beta = media_zinc)
 ```
 
 Ahora realizamos las predicciones sobre la grilla nueva para ambos modelos:
