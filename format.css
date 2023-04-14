@@ -1,0 +1,23 @@
+h1.title {
+  font-size: 38px;
+  color: black;
+  text-align: center;
+}
+h4.author {
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: black;
+  text-align: center;
+}
+h3.subtitle {
+  font-size: 28px;
+  font-family: "Times New Roman", Times, serif;
+  color: black;
+  text-align: center;
+}
+h4.date {
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: black;
+  text-align: center;
+}
